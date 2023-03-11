@@ -1,0 +1,68 @@
+#' @title BuildBinary
+#'
+#' @description Build package binary
+#'
+#' @author Adrian Antico
+#'
+#' @family Utilities
+#'
+#' @param Root NULL will setwd to project root as defined in function
+#'
+#' @export
+BuildBinary <- function(Root = NULL) {
+  x <- getwd()
+  if(!is.null(Root)) {
+    setwd(Root)
+    devtools::install(pkg = "Rodeo", dependencies = FALSE)
+  } else {
+    setwd("C:/Users/Bizon/Documents/GitHub")
+    devtools::build(pkg = "Rodeo")
+  }
+  setwd(x)
+}
+
+#' @title Install
+#'
+#' @description To install the package
+#'
+#' @author Adrian Antico
+#'
+#' @family Utilities
+#'
+#' @param Root NULL will setwd to project root as defined in function
+#'
+#' @export
+Install <- function(Root = NULL) {
+  x <- getwd()
+  if(!is.null(Root)) {
+    setwd(Root)
+    devtools::install(pkg = "Rodeo", dependencies = FALSE)
+  } else {
+    setwd("C:/Users/Bizon/Documents/GitHub")
+    devtools::install(pkg = "Rodeo", dependencies = FALSE)
+  }
+  setwd(x)
+}
+
+#' @title UpdateDocs
+#'
+#' @description Update helf files and reference manual
+#'
+#' @author Adrian Antico
+#'
+#' @family Utilities
+#'
+#' @export
+UpdateDocs <- function(BuildVignette = FALSE, Root = NULL) {
+  x <- getwd()
+  if(!is.null(Root)) {
+    setwd(Root)
+    devtools::document()
+    if(BuildVignette) devtools::build_manual()
+  } else {
+    setwd("C:/Users/Bizon/Documents/GitHub/Rodeo")
+    devtools::document()
+    if(BuildVignette) devtools::build_manual()
+  }
+  setwd(x)
+}

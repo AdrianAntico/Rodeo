@@ -7,6 +7,8 @@
 
 R Optimized Data Engineering Operations
 
+Note: see vignette for examples and parameter definitions
+
 ## Automated feature engineering using data.table and collapse
 
 ### Character Type Data

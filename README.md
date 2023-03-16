@@ -1,7 +1,7 @@
 ![Version:1.0.0](https://img.shields.io/static/v1?label=Version&message=1.0.0&color=blue&?style=plastic)
 [![PRsWelcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=default)](http://makeapullrequest.com)
 
-<img src="https://raw.githubusercontent.com/AdrianAntico/prettydoc/master/inst/RodeoLogo.PNG" align="center" width="800" />
+<img src="https://raw.githubusercontent.com/AdrianAntico/prettydoc/master/Images/RodeoLogo.PNG" align="center" width="800" />
 
 # Rodeo
 

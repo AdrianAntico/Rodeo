@@ -5,7 +5,7 @@
 
 # Rodeo
 
-R optimized data engineering operations
+R Optimized Data Engineering Operations
 
 ## Automated feature engineering using data.table and collapse
 

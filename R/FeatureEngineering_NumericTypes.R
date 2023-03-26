@@ -169,7 +169,7 @@ PercRankScoring <- function(data, ScoreTable, GroupVars = NULL, RollDirection = 
 #' @param NumVarOperations List of names
 #' @param Standardize List of results
 #'
-#' @noRd
+#' @export
 Interact <- function(x, i, NumVarOperations, Standardize) {
   if(i > 2L) {
     temp <- Standardize[[NumVarOperations[[x]][[1L]]]]$Result * Standardize[[NumVarOperations[[x]][[2L]]]]$Result
@@ -442,7 +442,7 @@ AutoInteraction <- function(data = NULL,
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @param eps erorr tolerance
 #' @param ... Arguments to pass along
@@ -467,7 +467,7 @@ Test_YeoJohnson <- function(x,
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @param lower the lower bound for search
 #' @param upper the upper bound for search
@@ -504,7 +504,7 @@ Estimate_YeoJohnson_Lambda <- function(x,
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @param lambda optimal lambda
 #' @param eps erorr tolerance
@@ -539,7 +539,7 @@ Apply_YeoJohnson <- function(x,
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @param lambda optimal lambda
 #' @param eps erorr tolerance
@@ -570,7 +570,7 @@ InvApply_YeoJohnson <- function(x,
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @param ... Arguments to pass along
 #' @return BoxCox results
@@ -590,7 +590,7 @@ Test_BoxCox <- function(x, ...) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @param lower the lower bound for search
 #' @param upper the upper bound for search
@@ -631,7 +631,7 @@ Estimate_BoxCox_Lambda <- function(x,
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @param lambda optimal lambda
 #' @param eps erorr tolerance
@@ -652,7 +652,7 @@ Apply_BoxCox <- function(x,
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @param lambda optimal lambda
 #' @param eps erorr tolerance
@@ -674,7 +674,7 @@ InvApply_BoxCox <- function(x,
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Asinh results
 Test_Asinh <- function(x) {
@@ -692,7 +692,7 @@ Test_Asinh <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Asinh results
 Apply_Asinh <- function(x) {
@@ -703,7 +703,7 @@ Apply_Asinh <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Asinh results
 InvApply_Asinh <- function(x) {
@@ -714,7 +714,7 @@ InvApply_Asinh <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Asin results
 Test_Asin <- function(x) {
@@ -732,7 +732,7 @@ Test_Asin <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Asin results
 Apply_Asin <- function(x) {
@@ -743,7 +743,7 @@ Apply_Asin <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Asin results
 InvApply_Asin <- function(x) {
@@ -754,7 +754,7 @@ InvApply_Asin <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Logit results
 Test_Logit <- function(x) {
@@ -772,7 +772,7 @@ Test_Logit <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Logit results
 Apply_Logit <- function(x) {
@@ -783,7 +783,7 @@ Apply_Logit <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Logit results
 InvApply_Logit <- function(x) {
@@ -794,7 +794,7 @@ InvApply_Logit <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Identity results
 Test_Identity <- function(x) {
@@ -812,7 +812,7 @@ Test_Identity <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Log results
 Test_Log <- function(x) {
@@ -830,7 +830,7 @@ Test_Log <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Log results
 Apply_Log <- function(x) {
@@ -841,7 +841,7 @@ Apply_Log <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Log results
 InvApply_Log <- function(x) {
@@ -852,7 +852,7 @@ InvApply_Log <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return LogPlus1 results
 Test_LogPlus1 <- function(x) {
@@ -871,7 +871,7 @@ Test_LogPlus1 <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Log results
 Apply_LogPlus1 <- function(x) {
@@ -882,7 +882,7 @@ Apply_LogPlus1 <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Log results
 InvApply_LogPlus1 <- function(x) {
@@ -893,7 +893,7 @@ InvApply_LogPlus1 <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Sqrt results
 Test_Sqrt <- function(x) {
@@ -911,7 +911,7 @@ Test_Sqrt <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Log results
 Apply_Sqrt <- function(x) {
@@ -922,7 +922,7 @@ Apply_Sqrt <- function(x) {
 #'
 #' @author Adrian Antico
 #' @family Feature Engineering
-#' @noRd
+#' @export
 #' @param x The data in numerical vector form
 #' @return Log results
 InvApply_Sqrt <- function(x) {
@@ -1311,7 +1311,7 @@ AutoTransformationScore <- function(ScoringData,
 #' }
 #'
 #' @return A list containing the data and the ArgsList
-#' @noRd
+#' @export
 CreateInteractions <- function(data = NULL,
                                RunMode = "train",
                                ArgsList = ArgsList,

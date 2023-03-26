@@ -352,7 +352,7 @@ ModelDataPrep <- function(data,
 #' }
 #'
 #' @return A list containing the data and the ArgsList
-#' @noRd
+#' @export
 PartitionData <- function(data = NULL,
                           ArgsList = ArgsList) {
 

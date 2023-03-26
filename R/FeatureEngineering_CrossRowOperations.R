@@ -411,7 +411,7 @@ AutoLagRollMode <- function(data,
 #' @param NLag1 Numeric
 #' @param NLag2 Numeric
 #' @param Type Choose from 'numeric' or 'date'
-#' @noRd
+#' @export
 DiffDT <- function(data, x, NLag1, NLag2, Type = "numeric") {
   if(Type == "numeric") {
     if(NLag1 == 0) {
@@ -1666,7 +1666,7 @@ AutoLagRollStatsScoring <- function(data,
 #'   Type           = "Lag",
 #'   SimpleImpute   = TRUE)
 #' }
-#' @noRd
+#' @export
 DT_GDL_Feature_Engineering <- function(data,
                                        lags            = 1,
                                        periods         = 0,
@@ -1963,7 +1963,7 @@ DT_GDL_Feature_Engineering <- function(data,
 #'   RecordsKeep    = c(1,5,100,2500),
 #'   AscRowRemove   = TRUE)
 #' }
-#' @noRd
+#' @export
 Partial_DT_GDL_Feature_Engineering <- function(data,
                                                lags            = 1,
                                                periods         = 0,
@@ -2436,7 +2436,7 @@ Partial_DT_GDL_Feature_Engineering <- function(data,
 #'   RecordsKeep    = c(1,5,100,2500),
 #'   AscRowRemove   = TRUE)
 #' }
-#' @noRd
+#' @export
 Partial_DT_GDL_Feature_Engineering2 <- function(data,
                                                 lags            = 1,
                                                 periods         = 0,
@@ -2766,7 +2766,7 @@ Partial_DT_GDL_Feature_Engineering2 <- function(data,
 #' }
 #'
 #' @return A list containing the data and the ArgsList
-#' @noRd
+#' @export
 DiffLagN <- function(data = NULL,
                      RunMode = "train",
                      ArgsList = ArgsList_FFE,
@@ -2878,7 +2878,7 @@ DiffLagN <- function(data = NULL,
 #' }
 #'
 #' @return A list containing the data and the ArgsList
-#' @noRd
+#' @export
 TimeSeriesFeatures <- function(data = NULL,
                                RunMode = "train",
                                ArgsList = NULL,

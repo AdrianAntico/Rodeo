@@ -827,7 +827,7 @@ CategoricalEncoding <- function(data = NULL,
 #' }
 #'
 #' @return A list containing the data and the ArgsList
-#' @noRd
+#' @export
 DummyVariables <- function(data,
                            RunMode = "train",
                            ArgsList = NULL,
@@ -900,6 +900,8 @@ DummyVariables <- function(data,
   return(list(data = data, ArgsList = ArgsList))
 }
 
+#' @title EncodeCharacterVariables
+#'
 #' @param RunMode 'train' or 'score'
 #' @param ModelType 'classification', 'regression', 'multiclass'
 #' @param TrainData Must supply data.table
@@ -915,7 +917,7 @@ DummyVariables <- function(data,
 #' @param ImputeMissingValue Supply a value or leave NULL to handle elsewhere
 #' @param Debug = FALSE
 #'
-#' @noRd
+#' @export
 EncodeCharacterVariables <- function(RunMode = 'train',
                                      ModelType = "classification",
                                      TrainData = NULL,
@@ -1068,6 +1070,8 @@ EncodeCharacterVariables <- function(RunMode = 'train',
     MetaData = if(exists("MetaDataList")) MetaDataList else NULL))
 }
 
+#' @title Encoding
+#'
 #' @param RunMode Passthrough
 #' @param ArgsList Passthrough
 #' @param TrainData Passthrough
@@ -1075,7 +1079,7 @@ EncodeCharacterVariables <- function(RunMode = 'train',
 #' @param TestData Passthrough
 #' @param ScoringData Passthrough
 #'
-#' @noRd
+#' @export
 Encoding <- function(RunMode = 'train',
                      ArgsList = NULL,
                      TrainData = NULL,

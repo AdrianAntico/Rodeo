@@ -13,7 +13,7 @@
 #' Lookback <- LB("days")
 #' }
 #'
-#' @noRd
+#' @export
 LB <- function(TimeAgg) {
   if(tolower(TimeAgg) %chin% c("hour","hours",
                                "1min","1mins","1minute","1minutes",
@@ -539,7 +539,7 @@ CreateHolidayVariables <- function(data,
 #' }
 #'
 #' @return A list containing the data and the ArgsList
-#' @noRd
+#' @export
 CalendarVariables <- function(data = NULL,
                               RunMode = "train",
                               ArgsList = NULL,
@@ -635,7 +635,7 @@ CalendarVariables <- function(data = NULL,
 #' }
 #'
 #' @return A list containing the data and the ArgsList
-#' @noRd
+#' @export
 HolidayVariables <- function(data = NULL,
                              RunMode = "train",
                              ArgsList = ArgsList,

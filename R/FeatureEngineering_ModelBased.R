@@ -423,7 +423,7 @@ AutoWord2VecScoring <- function(data,
 #' @param RunMode 'train' or 'score'
 #' @param SkipCols Colnames to skip over
 #'
-#' @noRd
+#' @export
 Word2Vec_H2O <- function(TrainData. = NULL,
                          ValidationData. = NULL,
                          TestData. = NULL,
@@ -1009,7 +1009,7 @@ H2OAutoencoderScoring <- function(data,
 #' @param ScoringData. data
 #' @param Pause 0L Sys.sleep(Pause)
 #'
-#' @noRd
+#' @export
 AutoEncoder_H2O <- function(RunMode = 'train',
                             ArgsList = NULL,
                             TrainData. = NULL,
@@ -1564,7 +1564,7 @@ H2OIsolationForestScoring <- function(data,
 #' @param TestData. data
 #' @param ScoringData. data
 #'
-#' @noRd
+#' @export
 IsolationForest_H2O <- function(ArgsList=ArgsList,
                                 TrainData. = NULL,
                                 ValidationData. = NULL,
@@ -2064,7 +2064,7 @@ AutoClusteringScoring <- function(data,
 #' @param TestData. data
 #' @param ScoringData. data
 #'
-#' @noRd
+#' @export
 Clustering_H2O <- function(ArgsList=ArgsList_FEE,
                            TrainData. = NULL,
                            ValidationData. = NULL,

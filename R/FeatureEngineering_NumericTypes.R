@@ -858,7 +858,7 @@ InvApply_Log <- function(x) {
 Test_LogPlus1 <- function(x) {
   stopifnot(is.numeric(x))
   xx <- min(x, na.rm = TRUE)
-  if(xx < 0) trans_data <- log(x+xx) else trans_data <- log(x)
+  if(xx < 0) trans_data <- log(x+xx+0.01) else trans_data <- log(x+xx+0.01)
   mu <- mean(trans_data, na.rm = TRUE)
   sigma <- sd(trans_data, na.rm = TRUE)
   trans_data_standardized <- (trans_data - mu) / sigma
@@ -986,7 +986,7 @@ AutoTransformationCreate <- function(data,
 
   # Loop through ColumnNames ----
   # colNames = 1
-  for(colNames in seq_along(ColumnNames)) {
+  for(colNames in seq_along(ColumnNames)) {# colNames <- 1
 
     # Collection Object----
     if(length(Methods) < 5) {

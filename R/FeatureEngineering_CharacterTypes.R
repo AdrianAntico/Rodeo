@@ -1159,3 +1159,457 @@ Encoding <- function(RunMode = 'train',
   # Return
   return(list(TrainData = TrainData, ValidationData = ValidationData, TestData = TestData, ScoringData = ScoringData, ArgsList = ArgsList))
 }
+
+#' @title MEOW
+#'
+#' @description Mixed Effects Offset Weighting
+#'
+#' @author Adrian Antico
+#' @family Mixed Effects
+#'
+#' @param data = NULL
+#' @param TargetVariable = NULL
+#' @param TargetType = 'regression', 'classification', 'multiclass'
+#' @param RandomEffects = NULL
+#' @param FixedEffects = NULL
+#' @param Nest Specify the outer and inner variable numbers. Function checks for successive numbers (1,2), (2,3), ... (N-1,N).  c(1,2)
+#' @param CollapseEPV CollapseEPV == TRUE gives you a constant EPV, otherwise it remains varied
+#' @param KeepSubStats = FALSE
+#' @param Lmer = FALSE,
+#' @param LmerType = 'add',
+#' @param PolyN NULL. Add a numeric value to use poly(FixedEffect, PolyN) in the mixed effects adjustment for fixed effects. Only allowed when length(FixedEffects) == 1
+#' @param Debug = FALSE
+#'
+#' @examples
+#' \dontrun{
+#' # Pull data and set vars to factors
+#' data <- data.table::fread(file = "C:/Users/Bizon/Documents/GitHub/gpa.csv"); data[, student := as.factor(student)];data[, semester := as.factor(semester)]
+#' data[, year := as.factor(year)]
+#' data[, student := as.factor(student)]
+#' data[, semester := as.factor(semester)]
+#' data[, Mean := mean(gpa), by = c('sex','semester','year','student')]
+#'
+#' # Run function
+#' TestModel <- AutoQuant::AutoCatBoostRegression(
+#'
+#'   # GPU or CPU and the number of available GPUs
+#'   task_type = 'GPU', NumGPUs = 1,
+#'   OutputSelection = c('Importances', 'EvalPlots', 'EvalMetrics', 'Score_TrainData'),
+#'   ReturnModelObjects = TRUE,
+#'
+#'   # Data args
+#'   data = data, model_path = getwd(),
+#'   TargetColumnName = 'gpa',
+#'   FeatureColNames = c('sex','semester','year'),
+#'   IDcols = setdiff(names(data), c('sex','semester','year','gpa')),
+#'
+#'   # ML args
+#'   Trees = 250, RandomStrength = 1, RSM = 1, GrowPolicy = 'SymmetricTree',
+#'   Depth = 9,
+#'   L2_Leaf_Reg = 10,
+#'   model_size_reg = 2)
+#'
+#' Output <- Rappture::MEOW(
+#'   data = TestModel$TrainData,
+#'   TargetType = 'regression',
+#'   TargetVariable = TestModel$ArgsList$TargetColumnName,
+#'   RandomEffects = 'student', # c('sex','semester','year','student'),
+#'   FixedEffects = 'Predict',
+#'   Nest = NULL,
+#'   CollapseEPV = TRUE,
+#'   KeepSubStats = FALSE,
+#'   Lmer = FALSE,
+#'   LmerType = 'add',
+#'   PolyN = NULL,
+#'   Debug = FALSE)
+#'
+#' Output <- Rappture::MEOW(
+#'   data = Output$data,
+#'   TargetType = 'regression',
+#'   TargetVariable = TestModel$ArgsList$TargetColumnName,
+#'   RandomEffects = 'student', # c('sex','semester','year','student'),
+#'   FixedEffects = 'Predict',
+#'   Nest = NULL,
+#'   CollapseEPV = TRUE,
+#'   KeepSubStats = FALSE,
+#'   Lmer = TRUE,
+#'   LmerType = 'add',
+#'   PolyN = NULL,
+#'   Debug = FALSE)
+#'
+#' }
+#'
+#' @export
+MEOW <- function(data = NULL,
+                 TargetType = 'regression',
+                 TargetVariable = NULL,
+                 RandomEffects = NULL,
+                 FixedEffects = NULL,
+                 Lmer = FALSE,
+                 LmerType = 'add',
+                 PolyN = NULL,
+                 Nest = NULL,
+                 CollapseEPV = TRUE,
+                 KeepSubStats = FALSE,
+                 Debug = FALSE) {
+
+  # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  # Rename variables to reduce run times. Switch back at end
+  # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+  library(collapse); library(magrittr); dataNames <- data.table::copy(names(data))
+  if(length(RandomEffects) > 1L) {
+    old <- c(TargetVariable, RandomEffects); new <- c('TargetVar', paste0('RE', seq_along(RandomEffects)))
+    data.table::setnames(data, old, new)
+    GroupVarsNew <- RandomEffects
+    RandomEffectsOld <- RandomEffects
+    RandomEffects <- paste0("RE", seq_along(RandomEffects))
+    old <- c('TargetVar', paste0("RE", seq_along(RandomEffects)), paste0('RE', seq_along(RandomEffects), "_MixedEffects"))
+    new <- c(TargetVariable, GroupVarsNew, paste0(GroupVarsNew, "_MixedEffects"))
+  } else {
+    old <- c(TargetVariable, RandomEffects); new <- c('TargetVar', paste0('RE', seq_along(RandomEffects)))
+    data.table::setnames(data, old, new)
+    GroupVarsNew <- RandomEffects
+    RandomEffectsOld <- RandomEffects
+    RandomEffects <- paste0("RE", seq_along(RandomEffects))
+    old <- c('TargetVar', paste0("RE", seq_along(RandomEffects)), paste0('RE', seq_along(RandomEffects), "_MixedEffects"))
+    new <- c(TargetVariable, GroupVarsNew, paste0(GroupVarsNew, "_MixedEffects"))
+  }
+
+  # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  # Nested Random Effects
+  # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+  # Build Nested Random Effects
+  for(i in seq_along(RandomEffects)) {
+
+    # i = 1    i = 2
+    # 1. Prior Stats; # 2. Posterior Stats; # 3. Merge prior to data (data holds posterior stats)
+    if(i == 1L) {
+
+      # Prior Stats ----
+      data.table::setkey(x = data, cols = RE1)
+      if(tolower(TargetType) == 'classification') {
+        DT <- list()
+        DT[['RE1']] <- collapse::funique(data$RE1)
+        DT[['RE1_Mean']] <- (data %>% gby(RE1) %>% gv('TargetVar') %>% fmean)[[2L]]
+        DT[['RE1_N']] <- (data %>% gby(RE1) %>% gv('TargetVar') %>% fnobs)[[2L]]
+        GroupMean <- data.table::setkey(data.table::setDT(DT), RE1)
+        rm(DT); gc()
+        GroupMean[, RE1_EPV := RE1_Mean * (1 - RE1_Mean) / RE1_N]
+      } else if(tolower(TargetType) == 'regression') {
+        DT <- list()
+        DT[['RE1']] <- collapse::funique(data$RE1)
+        DT[['RE1_Mean']] <- (data %>% gby(RE1) %>% gv('TargetVar') %>% fmean)[[2L]]
+        DT[['RE1_N']] <- (data %>% gby(RE1) %>% gv('TargetVar') %>% fnobs)[[2L]]
+        DT[['RE1_EPV']] <- (data %>% gby(RE1) %>% gv('TargetVar') %>% fvar)[[2L]]
+        GroupMean <- data.table::setkey(data.table::setDT(DT), RE1)
+        rm(DT); gc()
+      } else if(tolower(TargetType) == 'multiclass') {
+        GroupMean <- data[, list(RE1_N = .N), by = c('TargetVar', "RE1")]
+        GroupMean[, GrandSum := sum(RE1_N)]
+        GroupMean[, TargetSum := sum(RE1_N), by = 'TargetVar']
+        GroupMean[, TargetMean := TargetSum / GrandSum]
+        GroupMean[, TargetGroupMean := N / TargetSum]
+        GroupMean[, TargetVariance := TargetMean * (1 - TargetMean) / TargetSum]
+        GroupMean[, TargetGroupVariance := TargetGroupMean * (1 - TargetGroupMean) / RE1_N]
+        GroupMean[, Z := TargetGroupVariance / (TargetGroupVariance + TargetVariance)]
+        GroupMean[, RE1_MixedEffects := (1 - Z) * TargetGroupMean + Z * TargetMean]
+        GroupMean[, (setdiff(names(GroupMean), c("RE1_MixedEffects", 'TargetVar', 'RE1'))) := NULL]
+        GroupMean <- data.table::dcast.data.table(data = GroupMean, formula = RE1 ~ get(TargetVariable), fun.aggregate = sum, value.var = "RE1_MixedEffects", fill = 0)
+        data.table::setnames(x = GroupMean, names(GroupMean), c('RE1', paste0("RE1_MixedEffects_TargetLevel_", names(GroupMean)[-1L])))
+        data.table::setkeyv(GroupMean, cols = 'RE1')
+      }
+
+      # Merge prior ----
+      x <- data %>% gv('TargetVar') %>% fmean # 4x faster than GroupMean[, GrandMean := mean(data$TargetVar, na.rm = TRUE)]
+      GroupMean[, RE1_GrandMean := x]; rm(x)
+
+      if(CollapseEPV) {
+        GroupMean[, RE1_EPV := collapse::fmean(RE1_EPV, na.rm = TRUE)]
+      }
+
+      # Posterior
+      GroupMean[, RE1_VHM := collapse::fsum((RE1_Mean - RE1_GrandMean) ^ 2) / (.N-1) - RE1_EPV / RE1_N]
+      data.table::set(GroupMean, i = which(GroupMean[['RE1_VHM']] < 0), j = 'RE1_VHM', value = 0)
+      GroupMean[, RE1_K := RE1_EPV / (RE1_VHM + 1)]
+      GroupMean[, RE1_Z := RE1_N / (RE1_N + RE1_K + 1)]
+      GroupMean[, paste0(RandomEffects[i], "_MixedEffects") := RE1_Z * RE1_Mean + (1 - RE1_Z) * RE1_GrandMean]
+      if(KeepSubStats && tolower(TargetType) != 'multiclass') {
+        nam <- names(GroupMean)[-1L]
+        data[GroupMean, paste0(nam) := mget(paste0("i.", nam))]
+      } else if(tolower(TargetType) %in% c('regression','classification')) {
+        data[GroupMean, RE1_MixedEffects := i.RE1_MixedEffects]
+      } else {
+        data[GroupMean, eval(names(GroupMean)[!names(GroupMean) %chin% 'RE1']) := mget(paste0("i.", names(GroupMean)[!names(GroupMean) %chin% 'RE1']))]
+      }
+
+    } else if(i == 2L) {
+
+      # Prior Stats ----
+      GrandMean <- data %>% gby(RE2) %>% gv('RE1_MixedEffects') %>% fmean
+      data.table::setkeyv(GrandMean, 'RE2')
+      data.table::setkeyv(x = data, cols = 'RE2')
+      data.table::setnames(GrandMean, 'RE1_MixedEffects', 'RE2_GrandMean')
+
+      # Posterior Stats ----
+      DT <- list()
+      DT[['RE2']] <- funique(data[['RE2']])
+      if(all(c(1,2) %in% Nest)) {
+        DT[['RE2_Mean']] <- ((data %>% gby(RE1,RE2) %>% gv('TargetVar') %>% fmean) %>% gby(RE2) %>% gv('TargetVar') %>% fmean)[[2L]]
+        DT[['RE2_N']] <- ((data %>% gby(RE1,RE2) %>% gv('TargetVar') %>% fnobs) %>% gby(RE2) %>% gv('TargetVar') %>% fnobs)[[2L]]
+        if(TargetType == 'classification') {
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE2)
+          rm(DT); gc()
+          GroupMean[, RE2_EPV := RE2_Mean * (1 - RE2_Mean) / (RE2_N + 0.01)]
+        } else {
+          DT[['RE2_EPV']] <- ((data %>% gby(RE1,RE2) %>% gv('TargetVar') %>% fmean) %>% gby(RE2) %>% gv('TargetVar') %>% fvar)[[2L]]
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE2)
+          rm(DT); gc()
+        }
+
+      } else {
+
+        DT[['RE2_Mean']] <- (data %>% gby(RE2) %>% gv('TargetVar') %>% fmean)[[2L]]
+        DT[['RE2_N']] <- (data %>% gby(RE2) %>% gv('TargetVar') %>% fnobs)[[2L]]
+        if(TargetType == 'classification') {
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE2)
+          rm(DT); gc()
+          GroupMean[, RE2_EPV := RE2_Mean * (1 - RE2_Mean) / (RE2_N + 1)]
+        } else {
+          DT[['RE2_EPV']] <- (data %>% gby(RE2) %>% gv('TargetVar') %>% fvar)[[2L]]
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE2)
+          rm(DT); gc()
+        }
+      }
+
+      # Merge Prior to data ----
+      GroupMean[GrandMean, RE2_GrandMean := i.RE2_GrandMean]
+
+      if(CollapseEPV) {
+        GroupMean[, RE2_EPV := collapse::fmean(RE2_EPV, na.rm = TRUE)]
+      }
+
+      GroupMean[, RE2_VHM := collapse::fsum((RE2_Mean - RE2_GrandMean) ^ 2) / (.N-1) - RE2_EPV / (RE2_N + 1)]
+      data.table::set(GroupMean, i = which(GroupMean[['RE2_VHM']] < 0), j = 'RE2_VHM', value = 0)
+      GroupMean[, RE2_K := RE2_EPV / RE2_VHM]
+      GroupMean[, RE2_Z := RE2_N / (RE2_N + RE2_K + 1)]
+      GroupMean[, paste0(RandomEffects[i], "_MixedEffects") := RE2_Z * RE2_Mean + (1 - RE2_Z) * RE2_GrandMean]
+      if(KeepSubStats) {
+        nam <- names(GroupMean)[-1L]
+        data[GroupMean, paste0(nam) := mget(paste0("i.", nam))]
+      } else {
+        data[GroupMean, RE2_MixedEffects := i.RE2_MixedEffects]
+      }
+
+    } else if(i == 3L) {
+
+      # Prior Stats ----
+      GrandMean <- data %>% gby(RE3) %>% gv('RE2_MixedEffects') %>% fmean
+      data.table::setkey(GrandMean, RE3)
+      data.table::setnames(GrandMean, 'RE2_MixedEffects', 'RE3_GrandMean')
+      data.table::setkey(x = data, cols = RE3)
+
+      # Posterior Stats
+      DT <- list()
+      DT[['RE3']] <- unique(data$RE3)
+      if(all(c(2,3) %in% Nest)) {
+        DT[['RE3_Mean']] <- ((data %>% gby(RE2,RE3) %>% gv('TargetVar') %>% fmean) %>% gby(RE3) %>% gv('TargetVar') %>% fmean)[[2L]]
+        DT[['RE3_N']] <- ((data %>% gby(RE2,RE3) %>% gv('TargetVar') %>% fnobs) %>% gby(RE3) %>% gv('TargetVar') %>% fnobs)[[2L]]
+        if(TargetType == 'classification') {
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE3)
+          rm(DT); gc()
+          GroupMean[, RE3_EPV := RE3_Mean * (1 - RE3_Mean) / RE3_N]
+        } else {
+          DT[['RE3_EPV']] <- ((data %>% gby(RE2,RE3) %>% gv('TargetVar') %>% fmean) %>% gby(RE3) %>% gv('TargetVar') %>% fvar)[[2L]]
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE3)
+          rm(DT); gc()
+        }
+      } else {
+        DT[['RE3_Mean']] <- (data %>% gby(RE3) %>% gv('TargetVar') %>% fmean)[[2L]]
+        DT[['RE3_N']] <- (data %>% gby(RE3) %>% gv('TargetVar') %>% fnobs)[[2L]]
+        if(TargetType == 'classification') {
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE3)
+          rm(DT); gc()
+          GroupMean[, RE3_EPV := RE3_Mean * (1 - RE3_Mean) / RE3_N]
+        } else {
+          DT[['RE3_EPV']] <- (data %>% gby(RE3) %>% gv('TargetVar') %>% fvar)[[2L]]
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE3)
+          rm(DT); gc()
+        }
+      }
+
+      # Merge Prior to data ----
+      GroupMean[GrandMean, RE3_GrandMean := i.RE3_GrandMean]
+
+      if(CollapseEPV) {
+        GroupMean[, RE3_EPV := collapse::fmean(RE3_EPV, na.rm = TRUE)]
+      }
+
+      # Set to zero if negative
+      GroupMean[, RE3_VHM := collapse::fsum((RE3_Mean - RE3_GrandMean) ^ 2) / (.N-1) - RE3_EPV / RE3_N]
+      data.table::set(GroupMean, i = which(GroupMean[['RE3_VHM']] < 0), j = 'RE3_VHM', value = 0)
+      GroupMean[, RE3_K := RE3_EPV / RE3_VHM]
+      GroupMean[, RE3_Z := RE3_N / (RE3_N + RE3_K)]
+      GroupMean[, paste0(RandomEffects[i], "_MixedEffects") := RE3_Z * RE3_Mean + (1 - RE3_Z) * RE3_GrandMean]
+      if(KeepSubStats) {
+        nam <- names(GroupMean)[-1L]
+        data[GroupMean, paste0(nam) := mget(paste0("i.", nam))]
+      } else {
+        data[GroupMean, RE3_MixedEffects := i.RE3_MixedEffects]
+      }
+
+    } else if(i == 4L) {
+
+      # Prior Stats ----
+      GrandMean <- data %>% gby(RE4) %>% gv('RE3_MixedEffects') %>% fmean
+      data.table::setkey(GrandMean, RE4)
+      data.table::setnames(GrandMean, 'RE3_MixedEffects', 'RE4_GrandMean')
+      data.table::setkey(x = data, cols = RE4)
+
+      # Posterior Stats
+      DT <- list()
+      DT[['RE4']] <- unique(data$RE4)
+
+      if(all(c(3,4) %in% Nest)) {
+        DT[['RE4_Mean']] <- ((data %>% gby(RE3,RE4) %>% gv('TargetVar') %>% fmean) %>% gby(RE4) %>% gv('TargetVar') %>% fmean)[[2L]]
+        DT[['RE4_N']] <- ((data %>% gby(RE3,RE4) %>% gv('TargetVar') %>% fnobs) %>% gby(RE4) %>% gv('TargetVar') %>% fnobs)[[2L]]
+        if(TargetType == 'classification') {
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE4)
+          rm(DT); gc()
+          GroupMean[, RE4_EPV := RE4_Mean * (1 - RE4_Mean) / RE4_N]
+        } else {
+          DT[['RE4_EPV']] <- ((data %>% gby(RE3,RE4) %>% gv('TargetVar') %>% fmean) %>% gby(RE4) %>% gv('TargetVar') %>% fvar)[[2L]]
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE4)
+          rm(DT); gc()
+        }
+
+      } else {
+
+        DT[['RE4_Mean']] <- (data %>% gby(RE4) %>% gv('TargetVar') %>% fmean)[[2L]]
+        DT[['RE4_N']] <- (data %>% gby(RE4) %>% gv('TargetVar') %>% fnobs)[[2L]]
+        if(TargetType == 'classification') {
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE4)
+          rm(DT); gc()
+          GroupMean[, RE4_EPV := RE4_Mean * (1 - RE4_Mean) / RE4_N]
+        } else {
+          DT[['RE4_EPV']] <- (data %>% gby(RE4) %>% gv('TargetVar') %>% fvar)[[2L]]
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE4)
+          rm(DT); gc()
+        }
+      }
+
+      # Merge Prior to data ----
+      GroupMean[GrandMean, RE4_GrandMean := i.RE4_GrandMean]
+
+      if(CollapseEPV) {
+        GroupMean[, RE4_EPV := collapse::fmean(RE4_EPV, na.rm = TRUE)]
+      }
+
+      # Set to zero if negative
+      GroupMean[, RE4_VHM := collapse::fsum((RE4_Mean - RE4_GrandMean) ^ 2) / (.N-1) - RE4_EPV / RE4_N]
+      data.table::set(GroupMean, i = which(GroupMean[['RE4_VHM']] < 0), j = 'RE4_VHM', value = 0)
+      GroupMean[, RE4_K := RE4_EPV / RE4_VHM]
+      GroupMean[, RE4_Z := RE4_N / (RE4_N + RE4_K)]
+      GroupMean[, paste0(RandomEffects[i], "_MixedEffects") := RE4_Z * RE4_Mean + (1 - RE4_Z) * RE4_GrandMean]
+      if(KeepSubStats) {
+        nam <- names(GroupMean)[-1L]
+        data[GroupMean, paste0(nam) := mget(paste0("i.", nam))]
+      } else {
+        data[GroupMean, RE4_MixedEffects := i.RE4_MixedEffects]
+      }
+
+    } else if(i == 5L) {
+
+      # Prior Stats ----
+      GrandMean <- data %>% gby(RE5) %>% gv('RE4_MixedEffects') %>% fmean
+      data.table::setkey(GrandMean, RE5)
+      data.table::setnames(GrandMean, 'RE4_MixedEffects', 'RE5_GrandMean')
+      data.table::setkey(x = data, cols = RE5)
+
+      # Posterior Stats
+      DT <- list()
+      DT[['RE5']] <- unique(data$RE3)
+
+      if(all(c(4,5) %in% Nest)) {
+        DT[['RE5_Mean']] <- ((data %>% gby(RE4,RE5) %>% gv('TargetVar') %>% fmean) %>% gby(RE5) %>% gv('TargetVar') %>% fmean)[[2L]]
+        DT[['RE5_N']] <- ((data %>% gby(RE4,RE5) %>% gv('TargetVar') %>% fnobs) %>% gby(RE5) %>% gv('TargetVar') %>% fnobs)[[2L]]
+        if(TargetType == 'classification') {
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE5)
+          rm(DT); gc()
+          GroupMean[, RE5_EPV := RE5_Mean * (1 - RE5_Mean) / RE5_N]
+        } else {
+          DT[['RE5_EPV']] <- ((data %>% gby(RE4,RE5) %>% gv('TargetVar') %>% fmean) %>% gby(RE5) %>% gv('TargetVar') %>% fvar)[[2L]]
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE5)
+          rm(DT); gc()
+        }
+      } else {
+        DT[['RE5_Mean']] <- (data %>% gby(RE5) %>% gv('TargetVar') %>% fmean)[[2L]]
+        DT[['RE5_N']] <- (data %>% gby(RE5) %>% gv('TargetVar') %>% fnobs)[[2L]]
+        if(TargetType == 'classification') {
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE5)
+          rm(DT); gc()
+          GroupMean[, RE5_EPV := RE5_Mean * (1 - RE5_Mean) / RE5_N]
+        } else {
+          DT[['RE5_EPV']] <- (data %>% gby(RE5) %>% gv('TargetVar') %>% fvar)[[2L]]
+          GroupMean <- data.table::setkey(data.table::setDT(DT), RE5)
+          rm(DT); gc()
+        }
+      }
+
+      # Merge Prior to data ----
+      GroupMean[GrandMean, RE5_GrandMean := i.RE5_GrandMean]
+
+      if(CollapseEPV) {
+        GroupMean[, RE5_EPV := collapse::fmean(RE5_EPV, na.rm = TRUE)]
+      }
+
+      # Set to zero if negative
+      GroupMean[, RE5_VHM := collapse::fsum((RE5_Mean - RE5_GrandMean) ^ 2) / (.N-1) - RE5_EPV / RE5_N]
+      data.table::set(GroupMean, i = which(GroupMean[['RE5_VHM']] < 0), j = 'RE2_VHM', value = 0)
+      GroupMean[, RE5_K := RE5_EPV / RE5_VHM]
+      GroupMean[, RE5_Z := RE5_N / (RE5_N + RE5_K)]
+      GroupMean[, paste0(RandomEffects[i], "_MixedEffects") := RE5_Z * RE5_Mean + (1 - RE5_Z) * RE5_GrandMean]
+      if(KeepSubStats) {
+        nam <- names(GroupMean)[-1L]
+        data[GroupMean, paste0(nam) := mget(paste0("i.", nam))]
+      } else {
+        data[GroupMean, RE5_MixedEffects := i.RE5_MixedEffects]
+      }
+    }
+  }
+
+  # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  # Revert back to original names
+  # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  data.table::setnames(data, 'TargetVar', TargetVariable)
+  # i = 1  i = 2
+  for(i in seq_along(GroupVarsNew)) {
+    data.table::setnames(
+      data,
+      names(data)[which(names(data) %like% paste0('RE', i))],
+      gsub(pattern = paste0('RE', i), replacement = GroupVarsNew[i], x = names(data)[which(names(data) %like% paste0('RE', i))]))
+  }
+
+  # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  # Fixed Effects Time
+  # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  if(length(FixedEffects) > 0L && Lmer) {
+    Output <- Rappture::LMER(data, TargetVariable = TargetVariable, FixedEffects = FixedEffects, RandomEffects = RandomEffectsOld, Type = LmerType, Poly = PolyN, Family = if(TargetType == 'regression') 'gaussian' else 'binomial')
+    return(Output)
+  } else if(length(FixedEffects) > 0L && !Lmer) {
+    if(length(PolyN) == 1L) {
+      data[, paste0(TargetVariable, "_MMPredict") := lm(as.formula(paste0(TargetVariable, " ~ poly(", FixedEffects, ") + ", paste0("offset(", RandomEffectsOld[length(RandomEffectsOld)], "_MixedEffects)"))), data = data)$fitted.values]
+    } else {
+      data[, paste0(TargetVariable, "_MMPredict") := lm(as.formula(paste0(TargetVariable, " ~ ", paste0(FixedEffects, collapse =  " + "), " + ", paste0("offset(", RandomEffectsOld[length(RandomEffectsOld)], "_MixedEffects)"), collapse = " ")), data = data)$fitted.values]
+    }
+    return(list(
+      data = data,
+      DensityPlot = function(MeasureVariables) Rappture::Plot.Density(data = data, GroupVariables = RandomEffectsOld, MeasureVars = MeasureVariables)
+    ))
+  } else {
+    FactorLevelsList <- data[, mean(get(paste0(RandomEffectsOld[length(RandomEffectsOld)], "_MixedEffects"))), by = c(RandomEffectsOld)]
+    data.table::setnames(FactorLevelsList, 'V1', paste0(RandomEffectsOld[length(RandomEffectsOld)], "_MixedEffects"))
+    return(list(data = data, ComponentList = FactorLevelsList))
+  }
+}

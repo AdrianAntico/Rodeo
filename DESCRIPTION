@@ -11,7 +11,7 @@ Description: R optimized data engineering operations
 URL: https://github.com/AdrianAntico/Rodeo
 BugReports: https://github.com/AdrianAntico/Rodeo/issues
 Depends: R (>= 3.5.0)
-Imports: bit64, data.table, doParallel, foreach, lubridate, timeDate
+Imports: bit64, data.table, doParallel, foreach, lubridate, timeDate, collapse
 Suggests: knitr, rmarkdown, gridExtra
 VignetteBuilder: knitr
 Contact: Adrian Antico

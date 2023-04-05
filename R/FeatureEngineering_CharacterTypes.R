@@ -844,7 +844,7 @@ DummyVariables <- function(data,
     tempnames <- names(data.table::copy(data))
 
     # Run function
-    data <- AutoQuant::DummifyDT(
+    data <- DummifyDT(
       data = data,
       cols = ArgsList$Data$GroupVariables,
       TopN = ArgsList$FE_Args$Partial_Dummies$NumberLevels,
@@ -878,7 +878,7 @@ DummyVariables <- function(data,
   } else {
 
     # Run function
-    data <- AutoQuant::DummifyDT(
+    data <- DummifyDT(
       data = data,
       cols = ArgsList$DummyVariables$cols,
       TopN = ArgsList$DummyVariables$TopN,
@@ -1035,7 +1035,7 @@ EncodeCharacterVariables <- function(RunMode = 'train',
     }
   } else {
     if(Debug) print("EncodeCharacterVariables 3.f")
-    temp <- AutoQuant::CategoricalEncoding(data=temp, ML_Type=ModelType, GroupVariables=CategoricalVariableNames, TargetVariable=TargetVariableName, Method=EncodeMethod, SavePath=MetaDataPath, Scoring=Score, ImputeValueScoring=ImputeMissingValue, ReturnFactorLevelList=TRUE, SupplyFactorLevelList=MetaDataList, KeepOriginalFactors=KeepCategoricalVariables)
+    temp <- CategoricalEncoding(data=temp, ML_Type=ModelType, GroupVariables=CategoricalVariableNames, TargetVariable=TargetVariableName, Method=EncodeMethod, SavePath=MetaDataPath, Scoring=Score, ImputeValueScoring=ImputeMissingValue, ReturnFactorLevelList=TRUE, SupplyFactorLevelList=MetaDataList, KeepOriginalFactors=KeepCategoricalVariables)
     MetaDataList <- temp$FactorCompenents
     temp <- temp$data
   }
@@ -1097,7 +1097,7 @@ Encoding <- function(RunMode = 'train',
     tempnames <- names(data.table::copy(TrainData))
 
     # Dummify dataTrain Categorical Features ----
-    Output <- AutoQuant:::EncodeCharacterVariables(
+    Output <- EncodeCharacterVariables(
       RunMode = 'train',
       ModelType = ArgsList$MetaData$ModelType,
       TrainData = TrainData,

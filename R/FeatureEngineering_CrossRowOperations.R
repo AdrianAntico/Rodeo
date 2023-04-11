@@ -478,10 +478,10 @@ DiffDT <- function(data, x, NLag1, NLag2, Type = "numeric") {
 #' Cols <- names(data)[which(unlist(data[, lapply(.SD, is.numeric)]))]
 #'
 #' # Clean data before running AutoDiffLagN
-#' data <- AutoQuant::ModelDataPrep(data = data, Impute = FALSE, CharToFactor = FALSE, FactorToChar = TRUE)
+#' data <- Rodeo::ModelDataPrep(data = data, Impute = FALSE, CharToFactor = FALSE, FactorToChar = TRUE)
 #'
 #' # Run function
-#' data <- AutoQuant::AutoDiffLagN(
+#' data <- Rodeo::AutoDiffLagN(
 #'   data,
 #'   DateVariable = "DateTime",
 #'   GroupVariables = c("Factor_1", "Factor_2"),

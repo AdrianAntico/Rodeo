@@ -240,7 +240,7 @@ AutoDataPartition <- function(data,
 #' str(data)
 #'
 #' # Convert some factors to character
-#' data <- AutoQuant::ModelDataPrep(
+#' data <- Rodeo::ModelDataPrep(
 #'   data,
 #'   Impute       = TRUE,
 #'   CharToFactor = FALSE,
@@ -558,7 +558,7 @@ TimeSeriesFill <- function(data = NULL,
 
   # Impute
   if(SimpleImpute) {
-    FillData <- AutoQuant::ModelDataPrep(
+    FillData <- Rodeo::ModelDataPrep(
       FillData,
       Impute = TRUE,
       CharToFactor = FALSE,
@@ -619,7 +619,7 @@ TimeSeriesFillRoll <- function(data = NULL,
                                SimpleImpute = FALSE) {
 
   # Prep
-  data <- ModelDataPrep(
+  data <- Rodeo::ModelDataPrep(
     data = data, Impute = TRUE, CharToFactor = FALSE, FactorToChar = TRUE, IntToNumeric = TRUE, LogicalToBinary = TRUE,
     DateToChar = FALSE, IDateConversion = TRUE, RemoveDates = FALSE, MissFactor = 'missing', MissNum = 0.0)
 
@@ -647,7 +647,7 @@ TimeSeriesFillRoll <- function(data = NULL,
   }
 
   # Impute
-  if(SimpleImpute) FillData <- ModelDataPrep(FillData, Impute = TRUE, CharToFactor = FALSE, FactorToChar = FALSE, IntToNumeric = FALSE, DateToChar = FALSE, RemoveDates = FALSE, MissFactor = "0", MissNum = 0, IgnoreCols = NULL)
+  if(SimpleImpute) FillData <- Rodeo::ModelDataPrep(FillData, Impute = TRUE, CharToFactor = FALSE, FactorToChar = FALSE, IntToNumeric = FALSE, DateToChar = FALSE, RemoveDates = FALSE, MissFactor = "0", MissNum = 0, IgnoreCols = NULL)
 
   # Return data
   return(FillData)

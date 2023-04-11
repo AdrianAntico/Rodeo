@@ -67,7 +67,7 @@ data <- AutoQuant::FakeDataGenerator(
 str(data)
 
 # Convert some factors to character
-data <- AutoQuant::ModelDataPrep(
+data <- Rodeo::ModelDataPrep(
   data,
   Impute       = TRUE,
   CharToFactor = FALSE,

@@ -441,17 +441,6 @@ TimeSeriesFill <- function(data = NULL,
     data[, eval(DateColumnName) := as.Date(as.character(get(DateColumnName)), format = "%Y%m%d")]
   }
 
-  # Fill other
-  x <- tryCatch({substr(x = FillType[1L], start = 1L, stop = 7L)}, error = function(x) NULL)
-  if(length(x) > 0L && tolower(x) == "dynamic") {
-
-    # Fill
-    data <- data[, .SD, .SDcols = c(TargetColumn,DateColumnName,GroupVariables)]
-    FillData <- Rappture::FE.Impute.TimeSeriesFill(data,TargetColumn,DateColumnName,TimeUnit,FillType,CJList,GroupVariables = GroupVariables)
-    return(FillData)
-  }
-
-  # Fill from the absolute min date to the absolute max date
   if(FillType == "maxmax") {
 
     # Date variables

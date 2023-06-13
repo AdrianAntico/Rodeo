@@ -48,7 +48,7 @@ AutoDiffLagN create differences for selected numerical columns
 \dontrun{
 
 # Create fake data
-data <- AutoQuant::FakeDataGenerator(
+data <- Rodeo::FakeDataGenerator(
   Correlation = 0.70,
   N = 50000,
   ID = 2L,

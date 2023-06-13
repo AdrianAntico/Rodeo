@@ -82,7 +82,7 @@ AutoLagRollStats Builds lags and a large variety of rolling statistics with opti
 # Create fake Panel Data----
 Count <- 1L
 for(Level in LETTERS) {
-  datatemp <- AutoQuant::FakeDataGenerator(
+  datatemp <- Rodeo::FakeDataGenerator(
     Correlation = 0.75,
     N = 25000L,
     ID = 0L,
@@ -102,7 +102,7 @@ for(Level in LETTERS) {
 }
 
 # Add scoring records
-data <- AutoQuant::AutoLagRollStats(
+data <- Rodeo::AutoLagRollStats(
   data                 = data,
   DateColumn           = "DateTime",
   Targets              = "Adrian",

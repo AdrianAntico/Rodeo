@@ -35,7 +35,7 @@ Mode <- function(x) {
 #' # NO GROUPING CASE: Create fake Panel Data----
 #' Count <- 1L
 #' for(Level in LETTERS) {
-#'   datatemp <- AutoQuant::FakeDataGenerator(
+#'   datatemp <- Rodeo::FakeDataGenerator(
 #'     Correlation = 0.75,
 #'     N = 25000L,
 #'     ID = 0L,
@@ -55,7 +55,7 @@ Mode <- function(x) {
 #' }
 #'
 #' # NO GROUPING CASE: Create rolling modes for categorical features
-#' data <- AutoQuant::AutoLagRollMode(
+#' data <- Rodeo::AutoLagRollMode(
 #'   data,
 #'   Lags           = seq(1,5,1),
 #'   ModePeriods    = seq(2,5,1),
@@ -69,7 +69,7 @@ Mode <- function(x) {
 #' # GROUPING CASE: Create fake Panel Data----
 #' Count <- 1L
 #' for(Level in LETTERS) {
-#'   datatemp <- AutoQuant::FakeDataGenerator(
+#'   datatemp <- Rodeo::FakeDataGenerator(
 #'     Correlation = 0.75,
 #'     N = 25000L,
 #'     ID = 0L,
@@ -89,7 +89,7 @@ Mode <- function(x) {
 #' }
 #'
 #' # GROUPING CASE: Create rolling modes for categorical features
-#' data <- AutoQuant::AutoLagRollMode(
+#' data <- Rodeo::AutoLagRollMode(
 #'   data,
 #'   Lags           = seq(1,5,1),
 #'   ModePeriods    = seq(2,5,1),
@@ -462,7 +462,7 @@ DiffDT <- function(data, x, NLag1, NLag2, Type = "numeric") {
 #' \dontrun{
 #'
 #' # Create fake data
-#' data <- AutoQuant::FakeDataGenerator(
+#' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.70,
 #'   N = 50000,
 #'   ID = 2L,
@@ -658,7 +658,7 @@ AutoDiffLagN <- function(data,
 #' # Create fake Panel Data----
 #' Count <- 1L
 #' for(Level in LETTERS) {
-#'   datatemp <- AutoQuant::FakeDataGenerator(
+#'   datatemp <- Rodeo::FakeDataGenerator(
 #'     Correlation = 0.75,
 #'     N = 25000L,
 #'     ID = 0L,
@@ -678,7 +678,7 @@ AutoDiffLagN <- function(data,
 #' }
 #'
 #' # Add scoring records
-#' data <- AutoQuant::AutoLagRollStats(
+#' data <- Rodeo::AutoLagRollStats(
 #'   data                 = data,
 #'   DateColumn           = "DateTime",
 #'   Targets              = "Adrian",
@@ -1122,7 +1122,7 @@ AutoLagRollStats <- function(data,
 #' # Create fake Panel Data----
 #' Count <- 1L
 #' for(Level in LETTERS) {
-#'   datatemp <- AutoQuant::FakeDataGenerator(
+#'   datatemp <- Rodeo::FakeDataGenerator(
 #'     Correlation = 0.75,
 #'     N = 25000L,
 #'     ID = 0L,
@@ -1146,7 +1146,7 @@ AutoLagRollStats <- function(data,
 #' data.table::set(data1, i = which(data1[["ID"]] == 2L), j = "ID", value = 1L)
 #'
 #' # Score records
-#' data1 <- AutoQuant::AutoLagRollStatsScoring(
+#' data1 <- Rodeo::AutoLagRollStatsScoring(
 #'
 #'   # Data
 #'   data                 = data1,
@@ -1294,7 +1294,7 @@ AutoLagRollStatsScoring <- function(data,
     Counter <- 0L
 
     # Loop through the time aggs ----
-    for(timeaggs in TimeGroups) {
+    for(timeaggs in TimeGroups) {# timeaggs <- "day"
 
       # Increment----
       Counter <- Counter + 1L
@@ -1723,7 +1723,7 @@ DT_GDL_Feature_Engineering <- function(data,
 
   # Begin feature engineering----
   if(!is.null(groupingVars)) {
-    for(i in seq_along(groupingVars)) {
+    for(i in seq_along(groupingVars)) {# i = 1
       Targets <- targets
 
       # Sort data----
@@ -2401,6 +2401,7 @@ Partial_DT_GDL_Feature_Engineering <- function(data,
 #' @param AscRowByGroup Required to have a column with a Row Number by group (if grouping) with the smallest numbers being the records for scoring (typically the most current in time).
 #' @param RecordsKeep List the row number of AscRowByGroup and those data points will be returned
 #' @param AscRowRemove Set to TRUE to remove the AscRowByGroup column upon returning data.
+#' @param ShortName Remove group variable names from column names of created features
 #' @return data.table of original data plus created lags, rolling stats, and time between event lags and rolling stats
 #' @examples
 #' \dontrun{
@@ -2454,6 +2455,7 @@ Partial_DT_GDL_Feature_Engineering2 <- function(data,
                                                 Type            = "Lag",
                                                 Timer           = TRUE,
                                                 SimpleImpute    = TRUE,
+                                                ShortName       = TRUE,
                                                 AscRowByGroup   = "temp",
                                                 RecordsKeep     = 1,
                                                 AscRowRemove    = TRUE) {
@@ -2539,12 +2541,21 @@ Partial_DT_GDL_Feature_Engineering2 <- function(data,
 
       # Lags ----
       LAG_Names <- c()
-      for(t in Targets) LAG_Names <- c(LAG_Names, paste0(timeAggss, "_", groupingVars[i], "_LAG_", lags, "_", t))
+      if(ShortName) {
+        for(t in Targets) LAG_Names <- c(LAG_Names, paste0(timeAggss, "_LAG_", lags, "_", t))
+      } else {
+        for(t in Targets) LAG_Names <- c(LAG_Names, paste0(timeAggss, "_", groupingVars[i], "_LAG_", lags, "_", t))
+      }
+
       data1[, paste0(LAG_Names) := data.table::shift(.SD, n = lags, type = "lag"), by = c(groupingVars[i]), .SDcols = Targets]
 
       # Define targets----
       if(WindowingLag != 0L) {
-        Targets <- c(paste0(timeAggss, "_", groupingVars[i], "_LAG_", WindowingLag, "_", Targets))
+        if(ShortName) {
+          Targets <- c(paste0(timeAggss, "_LAG_", WindowingLag, "_", Targets))
+        } else {
+          Targets <- c(paste0(timeAggss, "_", groupingVars[i], "_LAG_", WindowingLag, "_", Targets))
+        }
       }
 
       # MA stats ----
@@ -2684,7 +2695,7 @@ Partial_DT_GDL_Feature_Engineering2 <- function(data,
       tempperiods <- SDperiods[SDperiods > 1L]
       SD_Names <- c()
       for(t in Targets) for(j in seq_along(tempperiods)) SD_Names <- c(SD_Names, paste0("SD_", tempperiods[j], "_", t))
-      data[get(AscRowByGroup) %in% RecordsKeep, paste0(SD_Names) := data.table::frollapply(x = .SD, n = tempperiods, FUN = sd, na.rm = TRUE), .SDcols = c(Targets)]
+      data[, paste0(SD_Names) := data.table::frollapply(x = .SD, n = tempperiods, FUN = sd, na.rm = TRUE), .SDcols = c(Targets)]
     }
 
     # Skewness stats ----
@@ -2692,7 +2703,7 @@ Partial_DT_GDL_Feature_Engineering2 <- function(data,
       tempperiods <- Skewperiods[Skewperiods > 2L]
       Skew_Names <- c()
       for(t in Targets) for(j in seq_along(tempperiods)) Skew_Names <- c(Skew_Names, paste0("Skew_", tempperiods[j], "_", t))
-      data[get(AscRowByGroup) %in% RecordsKeep, paste0(Skew_Names) := data.table::frollapply(x = .SD, n = tempperiods, FUN = e1071::skewness, na.rm = TRUE), .SDcols = c(Targets)]
+      data[, paste0(Skew_Names) := data.table::frollapply(x = .SD, n = tempperiods, FUN = e1071::skewness, na.rm = TRUE), .SDcols = c(Targets)]
     }
 
     # Kurtosis stats ----
@@ -2700,7 +2711,7 @@ Partial_DT_GDL_Feature_Engineering2 <- function(data,
       tempperiods <- Kurtperiods[Kurtperiods > 3L]
       Kurt_Names <- c()
       for(t in Targets) for(j in seq_along(tempperiods)) Kurt_Names <- c(Kurt_Names, paste0("Kurt_", tempperiods[j], "_", t))
-      data[get(AscRowByGroup) %in% RecordsKeep, paste0(Kurt_Names) := data.table::frollapply(x = .SD, n = tempperiods, FUN = e1071::kurtosis, na.rm = TRUE), .SDcols = c(Targets)]
+      data[, paste0(Kurt_Names) := data.table::frollapply(x = .SD, n = tempperiods, FUN = e1071::kurtosis, na.rm = TRUE), .SDcols = c(Targets)]
     }
 
     # Quantiles ----
@@ -2710,13 +2721,13 @@ Partial_DT_GDL_Feature_Engineering2 <- function(data,
         if(any(paste0("q",z) %chin% statsFUNs)) {
           Names <- c()
           for(t in Targets) for(j in seq_along(tempperiods)) Names <- c(Names, paste0("Q_", z, "_", tempperiods[j], "_", t))
-          data[get(AscRowByGroup) %in% RecordsKeep, paste0(Names) := data.table::frollapply(x = .SD, n = tempperiods, FUN = quantile, probs = z/100, na.rm = TRUE), .SDcols = c(Targets)]
+          data[, paste0(Names) := data.table::frollapply(x = .SD, n = tempperiods, FUN = quantile, probs = z/100, na.rm = TRUE), .SDcols = c(Targets)]
         }
       }
     }
 
     # Only keep requested columns ----
-    data <- data[get(AscRowByGroup) %in% RecordsKeep][, temp := NULL]
+    data <- data[get(AscRowByGroup) %in% c(eval(RecordsKeep))]
 
     # Impute missing values ----
     if(SimpleImpute) {
@@ -2752,7 +2763,7 @@ Partial_DT_GDL_Feature_Engineering2 <- function(data,
 #'
 #' @examples
 #' \dontrun{
-#' Output <- AutoQuant:::DiffLagN(
+#' Output <- Rodeo:::DiffLagN(
 #'   data = data,
 #'   RunMode = "train",
 #'   ArgsList = ArgsList_FE,
@@ -2786,7 +2797,7 @@ DiffLagN <- function(data = NULL,
     tempnames <- names(data.table::copy(data))
 
     # Run function
-    data <- AutoQuant::AutoDiffLagN(
+    data <- Rodeo::AutoDiffLagN(
       data = data,
       GroupVariables = ArgsList$Data$GroupVariables,
       DateVariable = ArgsList$Data$DateVariables,
@@ -2820,7 +2831,7 @@ DiffLagN <- function(data = NULL,
     Start <- Sys.time()
 
     # Run function
-    data <- AutoQuant::AutoDiffLagN(
+    data <- Rodeo::AutoDiffLagN(
       data = data,
       GroupVariables = ArgsList$FE_AutoDiffLagN$GroupVariables[[RunNumber]],
       DateVariable = ArgsList$FE_AutoDiffLagN$DateVariables[[RunNumber]],
@@ -2865,7 +2876,7 @@ DiffLagN <- function(data = NULL,
 #'
 #' @examples
 #' \dontrun{
-#' Output <- AutoQuant:::TimeSeriesFeatures(
+#' Output <- Rodeo:::TimeSeriesFeatures(
 #'   data = data,
 #'   RunMode = "train",
 #'   ArgsList = NULL,
@@ -2897,7 +2908,7 @@ TimeSeriesFeatures <- function(data = NULL,
     tempnames <- names(data.table::copy(data))
 
     # Run function
-    data <- AutoQuant::AutoLagRollStats(
+    data <- Rodeo::AutoLagRollStats(
 
       # Data
       data                 = data,
@@ -2958,7 +2969,7 @@ TimeSeriesFeatures <- function(data = NULL,
     Start <- Sys.time()
 
     # Run function
-    data <- AutoQuant::AutoLagRollStatsScoring(
+    data <- Rodeo::AutoLagRollStatsScoring(
 
       # Data
       data                 = data,

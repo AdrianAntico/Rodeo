@@ -22,6 +22,7 @@ Partial_DT_GDL_Feature_Engineering2(
   Type = "Lag",
   Timer = TRUE,
   SimpleImpute = TRUE,
+  ShortName = TRUE,
   AscRowByGroup = "temp",
   RecordsKeep = 1,
   AscRowRemove = TRUE
@@ -61,6 +62,8 @@ Partial_DT_GDL_Feature_Engineering2(
 \item{Timer}{Set to TRUE if you percentage complete tracker printout}
 
 \item{SimpleImpute}{Set to TRUE for factor level imputation of "0" and numeric imputation of -1}
+
+\item{ShortName}{Remove group variable names from column names of created features}
 
 \item{AscRowByGroup}{Required to have a column with a Row Number by group (if grouping) with the smallest numbers being the records for scoring (typically the most current in time).}
 

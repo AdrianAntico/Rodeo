@@ -40,7 +40,7 @@ Create differences for numeric and date variables
 }
 \examples{
 \dontrun{
-Output <- AutoQuant:::DiffLagN(
+Output <- Rodeo:::DiffLagN(
   data = data,
   RunMode = "train",
   ArgsList = ArgsList_FE,

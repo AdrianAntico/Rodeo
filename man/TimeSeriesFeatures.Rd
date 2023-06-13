@@ -37,7 +37,7 @@ Create lags and rolling stats
 }
 \examples{
 \dontrun{
-Output <- AutoQuant:::TimeSeriesFeatures(
+Output <- Rodeo:::TimeSeriesFeatures(
   data = data,
   RunMode = "train",
   ArgsList = NULL,

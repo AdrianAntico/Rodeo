@@ -81,7 +81,7 @@ for(Level in LETTERS) {
 }
 
 # Add scoring records
-data <- AutoQuant::AutoLagRollStats(
+data <- Rodeo::AutoLagRollStats(
 
   # Data
   data                 = data,
@@ -143,7 +143,7 @@ data[, ID := .N:1L, by = "Factor1"]
 data.table::set(data, i = which(data[["ID"]] == 2L), j = "ID", value = 1L)
 
 # Score records
-data <- AutoQuant::AutoLagRollStatsScoring(
+data <- Rodeo::AutoLagRollStatsScoring(
 
   # Data
   data                 = data,
@@ -218,7 +218,7 @@ for(Level in LETTERS) {
 }
 
 # NO GROUPING CASE: Create rolling modes for categorical features
-data <- AutoQuant::AutoLagRollMode(
+data <- Rodeo::AutoLagRollMode(
   data,
   Lags           = seq(1,5,1),
   ModePeriods    = seq(2,5,1),
@@ -252,7 +252,7 @@ for(Level in LETTERS) {
 }
 
 # GROUPING CASE: Create rolling modes for categorical features
-data <- AutoQuant::AutoLagRollMode(
+data <- Rodeo::AutoLagRollMode(
   data,
   Lags           = seq(1,5,1),
   ModePeriods    = seq(2,5,1),
@@ -304,14 +304,14 @@ data <- AutoQuant::FakeDataGenerator(
 Cols <- names(data)[which(unlist(data[, lapply(.SD, is.numeric)]))]
 
 # Clean data before running AutoDiffLagN
-data <- AutoQuant::ModelDataPrep(
+data <- Rodeo::ModelDataPrep(
   data = data,
   Impute = FALSE,
   CharToFactor = FALSE,
   FactorToChar = TRUE)
 
 # Run function
-data <- AutoQuant::AutoDiffLagN(
+data <- Rodeo::AutoDiffLagN(
   data,
   DateVariable = "DateTime",
   GroupVariables = c("Factor_2"),
@@ -344,14 +344,14 @@ data <- AutoQuant::FakeDataGenerator(
 Cols <- names(data)[which(unlist(data[, lapply(.SD, is.numeric)]))]
 
 # Clean data before running AutoDiffLagN
-data <- AutoQuant::ModelDataPrep(
+data <- Rodeo::ModelDataPrep(
   data = data,
   Impute = FALSE,
   CharToFactor = FALSE,
   FactorToChar = TRUE)
 
 # Run function
-data <- AutoQuant::AutoDiffLagN(
+data <- Rodeo::AutoDiffLagN(
   data,
   DateVariable = "DateTime",
   GroupVariables = c("Factor_2"),
@@ -406,7 +406,7 @@ Cols <-names(data)[c(which(unlist(lapply(data, is.numeric))),
                      which(unlist(lapply(data, is.integer))))]
 
 # Model Training Feature Engineering
-system.time(data <- AutoQuant::AutoInteraction(
+system.time(data <- Rodeo::AutoInteraction(
   data = data,
   NumericVars = Cols,
   InteractionDepth = 4,
@@ -448,7 +448,7 @@ print(ncol(data))
 data <- data[1L]
 
 # Model Scoring Feature Engineering
-system.time(data <- AutoQuant::AutoInteraction(
+system.time(data <- Rodeo::AutoInteraction(
   data = data,
   NumericVars = names(data)[
     c(which(unlist(lapply(data, is.numeric))),
@@ -500,7 +500,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Create Model and Vectors
-data <- AutoQuant::AutoWord2VecModeler(
+data <- Rodeo::AutoWord2VecModeler(
   data,
   BuildType = "individual",
   stringCol = c("Comment"),
@@ -533,7 +533,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Create vectors for scoring
-data <- AutoQuant::AutoWord2VecScoring(
+data <- Rodeo::AutoWord2VecScoring(
   data,
   BuildType = "individual",
   ModelObject = NULL,
@@ -579,8 +579,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Take your pick
-Meth <- c('m_estimator',
-          'credibility',
+Meth <- c('credibility',
           'woe',
           'target_encoding',
           'poly_encode',
@@ -594,7 +593,7 @@ MethNum <- 1
 test <- data.table::copy(data)
 
 # Run in Train Mode
-data <- AutoQuant::CategoricalEncoding(
+data <- Rodeo::CategoricalEncoding(
   data = data,
   ML_Type = "classification",
   GroupVariables = paste0("Factor_", 1:10),
@@ -610,7 +609,7 @@ data <- AutoQuant::CategoricalEncoding(
 print(data)
 
 # Run in Score Mode by pulling in the csv's
-test <- AutoQuant::CategoricalEncoding(
+test <- Rodeo::CategoricalEncoding(
   data = data,
   ML_Type = "classification",
   GroupVariables = paste0("Factor_", 1:10),
@@ -663,7 +662,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Run algo
-Output <- AutoQuant::H2OAutoencoder(
+Output <- Rodeo::H2OAutoencoder(
   
   # Select the service
   AnomalyDetection = TRUE,
@@ -720,7 +719,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Run algo
-data <- AutoQuant::H2OAutoencoderScoring(
+data <- Rodeo::H2OAutoencoderScoring(
 
   # Select the service
   AnomalyDetection = TRUE,
@@ -776,7 +775,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Run algo
-data <- AutoQuant::H2OIsolationForest(
+data <- Rodeo::H2OIsolationForest(
   data,
   Features = names(data)[2L:ncol(data)],
   IDcols = c("Adrian", "IDcol_1", "IDcol_2"),
@@ -799,7 +798,7 @@ data <- AutoQuant::H2OIsolationForest(
 data[, eval(names(data)[17:ncol(data)]) := NULL]
 
 # Run algo
-Outliers <- AutoQuant::H2OIsolationForestScoring(
+Outliers <- Rodeo::H2OIsolationForestScoring(
   data,
   Features = names(data)[2:ncol(data)],
   IDcols = c("Adrian", "IDcol_1", "IDcol_2"),
@@ -847,7 +846,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Run function
-data <- AutoQuant::AutoClustering(
+data <- Rodeo::AutoClustering(
   data,
   FeatureColumns = names(data)[2:(ncol(data)-1)],
   ModelID = "TestModel",
@@ -881,7 +880,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Run function
-data <- AutoQuant::AutoClusteringScoring(
+data <- Rodeo::AutoClusteringScoring(
   data,
   FeatureColumns = names(data)[2:(ncol(data)-1)],
   ModelID = "TestModel",
@@ -934,7 +933,7 @@ for(i in seq_len(20L)) {
 # Create calendar variables - automatically excludes the second, minute, and hour selections since
 #   it is not timestamp data
 runtime <- system.time(
-  data <- AutoQuant::CreateCalendarVariables(
+  data <- Rodeo::CreateCalendarVariables(
     data = data,
     DateCols = "DateTime",
     AsFactor = FALSE,
@@ -1058,7 +1057,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Scoring Version (imports csv's to generate matching levels and ordering)
-data <- AutoQuant::DummifyDT(
+data <- Rodeo::DummifyDT(
   data = data,
   cols = c("Factor_1",
            "Factor_2",
@@ -1108,7 +1107,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Run data partitioning function
-dataSets <- AutoQuant::AutoDataPartition(
+dataSets <- Rodeo::AutoDataPartition(
   data,
   NumDataSets = 3L,
   Ratios = c(0.70,0.20,0.10),
@@ -1157,7 +1156,7 @@ data <- AutoQuant::FakeDataGenerator(
 str(data)
 
 # RUn function
-data <- AutoQuant::ModelDataPrep(
+data <- Rodeo::ModelDataPrep(
   data,
   Impute = TRUE,
   CharToFactor = FALSE,

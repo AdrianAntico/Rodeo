@@ -306,6 +306,8 @@ CategoricalEncoding <- function(data = NULL,
                                 KeepOriginalFactors = TRUE,
                                 Debug = FALSE) {
 
+  if(!method %in% c('credibility','target_encoding','woe','poly_encode','backward_difference','helmert','credibility')) return(data)
+
   if(Debug) print('CategoricalEncoding 1')
 
   # Args Check

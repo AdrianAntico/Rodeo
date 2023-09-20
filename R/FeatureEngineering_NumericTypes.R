@@ -858,7 +858,7 @@ InvApply_Log <- function(x) {
 Test_LogPlus1 <- function(x) {
   stopifnot(is.numeric(x))
   xx <- min(x, na.rm = TRUE)
-  if(xx < 0) trans_data <- log(x+xx+0.01) else trans_data <- log(x+xx+0.01)
+  if(xx < 0) trans_data <- log(x+abs(xx)+1) else trans_data <- log(x)
   mu <- mean(trans_data, na.rm = TRUE)
   sigma <- sd(trans_data, na.rm = TRUE)
   trans_data_standardized <- (trans_data - mu) / sigma

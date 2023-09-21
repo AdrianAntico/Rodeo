@@ -210,6 +210,104 @@ DummifyDT <- function(data,
   }
 }
 
+#' @title DummyVariables
+#'
+#' @description Create dummy variables for categorical variables. You can select the max amount of levels to return per feature.
+#'
+#' @author Adrian Antico
+#' @family Feature Engineering - Character Types
+#'
+#' @param data Source data
+#' @param RunMode 'train' or 'score'
+#' @param ArgsList ArgsList_FFE
+#' @param SkipCols Vector of column names to remove from data
+#'
+#' @examples
+#' \dontrun{
+#' Output <- AutoQuant::DummyVariables(
+#'   data = data,
+#'   RunMode = "train",
+#'   ArgsList = ArgsList_FE,
+#'   SkipCols = NULL)
+#' data <- Output$data
+#' ArgsList_FE <- Output$ArgsList
+#' }
+#'
+#' @return A list containing the data and the ArgsList
+#' @export
+DummyVariables <- function(data,
+                           RunMode = "train",
+                           ArgsList = NULL,
+                           SkipCols = NULL,
+                           KeepCharCols = TRUE) {
+
+  # Metadata
+  Start <- Sys.time()
+
+  # Run function
+  if(tolower(RunMode) == "train") {
+
+    # Colnames
+    tempnames <- names(data.table::copy(data))
+
+    # Run function
+    data <- DummifyDT(
+      data = data,
+      cols = ArgsList$Data$GroupVariables,
+      TopN = ArgsList$FE_Args$Partial_Dummies$NumberLevels,
+      KeepFactorCols = KeepCharCols,
+      OneHot = FALSE,
+      SaveFactorLevels = TRUE,
+      SavePath = file.path(ArgsList$MetaData$MetaData_Path),
+      ImportFactorLevels = FALSE,
+      FactorLevelsList = NULL,
+      ClustScore = FALSE,
+      ReturnFactorLevels = FALSE)
+
+    # Args tracking
+    ArgsList$DummyVariables$cols <- ArgsList$Data$GroupVariables
+    ArgsList$DummyVariables$TopN <- ArgsList$FE_Args$Partial_Dummies$NumberLevels
+    ArgsList$DummyVariables$KeepFactorCols <- KeepCharCols
+    ArgsList$DummyVariables$OneHot <- FALSE
+    ArgsList$DummyVariables$SaveFactorLevels <- TRUE
+    ArgsList$DummyVariables$SavePath <- ArgsList$MetaData$MetaData_Path
+    ArgsList$DummyVariables$ImportFactorLevels <- FALSE
+    ArgsList$DummyVariables$FactorLevelsList <- NA
+    ArgsList$DummyVariables$ClustScore <- FALSE
+
+    # Column tracking
+    ArgsList$FE_Columns$PartialDummies <- setdiff(names(data), tempnames)
+
+    # Run time tracking
+    End <- Sys.time()
+    ArgsList$RunTime$PartialDummies_Training <- difftime(time1 = End, time2 = Start, units = "mins")
+
+  } else {
+
+    # Run function
+    data <- DummifyDT(
+      data = data,
+      cols = ArgsList$DummyVariables$cols,
+      TopN = ArgsList$DummyVariables$TopN,
+      KeepFactorCols = ArgsList$DummyVariables$KeepFactorCols,
+      OneHot = ArgsList$DummyVariables$OneHot,
+      SaveFactorLevels = ArgsList$DummyVariables$SaveFactorLevels,
+      SavePath = ArgsList$DummyVariables$SavePath,
+      ImportFactorLevels = TRUE,
+      FactorLevelsList = NULL,
+      ClustScore = ArgsList$DummyVariables$ClustScore,
+      ReturnFactorLevels = ArgsList$DummyVariables$ReturnFactorLevels)
+
+    # Run time tracking
+    End <- Sys.time()
+    ArgsList$RunTime$PartialDummies_Scoring <- difftime(time1 = End, time2 = Start, units = "mins")
+  }
+
+  # Return
+  return(list(data = data, ArgsList = ArgsList))
+}
+
+
 #' @title CategoricalEncoding
 #'
 #' @description Categorical encoding for factor and character columns
@@ -306,7 +404,7 @@ CategoricalEncoding <- function(data = NULL,
                                 KeepOriginalFactors = TRUE,
                                 Debug = FALSE) {
 
-  if(!method %in% c('credibility','target_encoding','woe','poly_encode','backward_difference','helmert','credibility')) return(data)
+  if(!Method %in% c('credibility','target_encoding','woe','poly_encode','backward_difference','helmert','credibility')) return(data)
 
   if(Debug) print('CategoricalEncoding 1')
 
@@ -805,103 +903,6 @@ CategoricalEncoding <- function(data = NULL,
   }
 }
 
-#' @title DummyVariables
-#'
-#' @description Create dummy variables for categorical variables. You can select the max amount of levels to return per feature.
-#'
-#' @author Adrian Antico
-#' @family Feature Engineering - Character Types
-#'
-#' @param data Source data
-#' @param RunMode 'train' or 'score'
-#' @param ArgsList ArgsList_FFE
-#' @param SkipCols Vector of column names to remove from data
-#'
-#' @examples
-#' \dontrun{
-#' Output <- AutoQuant::DummyVariables(
-#'   data = data,
-#'   RunMode = "train",
-#'   ArgsList = ArgsList_FE,
-#'   SkipCols = NULL)
-#' data <- Output$data
-#' ArgsList_FE <- Output$ArgsList
-#' }
-#'
-#' @return A list containing the data and the ArgsList
-#' @export
-DummyVariables <- function(data,
-                           RunMode = "train",
-                           ArgsList = NULL,
-                           SkipCols = NULL,
-                           KeepCharCols = TRUE) {
-
-  # Metadata
-  Start <- Sys.time()
-
-  # Run function
-  if(tolower(RunMode) == "train") {
-
-    # Colnames
-    tempnames <- names(data.table::copy(data))
-
-    # Run function
-    data <- DummifyDT(
-      data = data,
-      cols = ArgsList$Data$GroupVariables,
-      TopN = ArgsList$FE_Args$Partial_Dummies$NumberLevels,
-      KeepFactorCols = KeepCharCols,
-      OneHot = FALSE,
-      SaveFactorLevels = TRUE,
-      SavePath = file.path(ArgsList$MetaData$MetaData_Path),
-      ImportFactorLevels = FALSE,
-      FactorLevelsList = NULL,
-      ClustScore = FALSE,
-      ReturnFactorLevels = FALSE)
-
-    # Args tracking
-    ArgsList$DummyVariables$cols <- ArgsList$Data$GroupVariables
-    ArgsList$DummyVariables$TopN <- ArgsList$FE_Args$Partial_Dummies$NumberLevels
-    ArgsList$DummyVariables$KeepFactorCols <- KeepCharCols
-    ArgsList$DummyVariables$OneHot <- FALSE
-    ArgsList$DummyVariables$SaveFactorLevels <- TRUE
-    ArgsList$DummyVariables$SavePath <- ArgsList$MetaData$MetaData_Path
-    ArgsList$DummyVariables$ImportFactorLevels <- FALSE
-    ArgsList$DummyVariables$FactorLevelsList <- NA
-    ArgsList$DummyVariables$ClustScore <- FALSE
-
-    # Column tracking
-    ArgsList$FE_Columns$PartialDummies <- setdiff(names(data), tempnames)
-
-    # Run time tracking
-    End <- Sys.time()
-    ArgsList$RunTime$PartialDummies_Training <- difftime(time1 = End, time2 = Start, units = "mins")
-
-  } else {
-
-    # Run function
-    data <- DummifyDT(
-      data = data,
-      cols = ArgsList$DummyVariables$cols,
-      TopN = ArgsList$DummyVariables$TopN,
-      KeepFactorCols = ArgsList$DummyVariables$KeepFactorCols,
-      OneHot = ArgsList$DummyVariables$OneHot,
-      SaveFactorLevels = ArgsList$DummyVariables$SaveFactorLevels,
-      SavePath = ArgsList$DummyVariables$SavePath,
-      ImportFactorLevels = TRUE,
-      FactorLevelsList = NULL,
-      ClustScore = ArgsList$DummyVariables$ClustScore,
-      ReturnFactorLevels = ArgsList$DummyVariables$ReturnFactorLevels)
-
-    # Run time tracking
-    End <- Sys.time()
-    ArgsList$RunTime$PartialDummies_Scoring <- difftime(time1 = End, time2 = Start, units = "mins")
-  }
-
-  # Return
-  return(list(data = data, ArgsList = ArgsList))
-}
-
 #' @title EncodeCharacterVariables
 #'
 #' @param RunMode 'train' or 'score'
@@ -1017,17 +1018,17 @@ EncodeCharacterVariables <- function(RunMode = 'train',
 
 
       # QA values
-      data=temp_validate
-      ML_Type=ModelType
-      GroupVariables=CategoricalVariableNames
-      TargetVariable=TargetVariableName
-      Method=EncodeMethod
-      SavePath=MetaDataPath
-      Scoring=TRUE
-      ImputeValueScoring=ImputeMissingValue
-      ReturnFactorLevelList=FALSE
-      SupplyFactorLevelList=MetaDataList
-      KeepOriginalFactors=KeepCategoricalVariables
+      # data=temp_validate
+      # ML_Type=ModelType
+      # GroupVariables=CategoricalVariableNames
+      # TargetVariable=TargetVariableName
+      # Method=EncodeMethod
+      # SavePath=MetaDataPath
+      # Scoring=TRUE
+      # ImputeValueScoring=ImputeMissingValue
+      # ReturnFactorLevelList=FALSE
+      # SupplyFactorLevelList=MetaDataList
+      # KeepOriginalFactors=KeepCategoricalVariables
 
 
 

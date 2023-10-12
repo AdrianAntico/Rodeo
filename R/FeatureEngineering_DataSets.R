@@ -430,6 +430,22 @@ TimeSeriesFill <- function(data = NULL,
                            MaxMissingPercent = 0.05,
                            SimpleImpute = FALSE) {
 
+  print("here 1")
+
+  # if(TimeUnit %in% c("Hourly","Hours","Hour")) {
+  #   TimeUnit <- "hours"
+  # } else if(TimeUnit %in% c("Day", "Daily", "Days")) {
+  #   TimeUnit <- "days"
+  # } else if(TimeUnit %in% c("Week", "Weekly", "Weeks")) {
+  #   TimeUnit <- "weeks"
+  # } else if(TimeUnit %in% c("Month", "Monthly", "Months")) {
+  #   TimeUnit <- "months"
+  # } else if(TimeUnit %in% c("Quarter", "Quarterly", "Quarters")) {
+  #   TimeUnit <- "quarter"
+  # } else if(TimeUnit %in% c("Year", "Yearly", "Years")) {
+  #   TimeUnit <- "years"
+  # }
+
   # Grab args
   if(length(FillType) > 1L) FillType <- FillType[1L]
 
@@ -444,8 +460,8 @@ TimeSeriesFill <- function(data = NULL,
   if(FillType == "maxmax") {
 
     # Date variables
-    MinDate <- data[, min(get(DateColumnName))]
-    MaxDate <- data[, max(get(DateColumnName))]
+    MinDate <- data[, min(get(DateColumnName), na.rm = TRUE)]
+    MaxDate <- data[, max(get(DateColumnName), na.rm = TRUE)]
     if(any(TimeUnit %chin% c("1min","5min","10min","15min","30min","45min"))) {
       CJList[[eval(DateColumnName)]] <- seq(from = MinDate, to = MaxDate, by = 60 * as.numeric(gsub("([0-9]+).*$", "\\1", TimeUnit)))
     } else {
@@ -468,8 +484,8 @@ TimeSeriesFill <- function(data = NULL,
   if(FillType == "minmax") {
 
     # Date variables
-    MinDate <- data[, min(get(DateColumnName)), by = c(eval(GroupVariables))][, max(V1)]
-    MaxDate <- data[, max(get(DateColumnName))]
+    MinDate <- data[, min(get(DateColumnName), na.rm = TRUE), by = c(eval(GroupVariables))][, max(V1)]
+    MaxDate <- data[, max(get(DateColumnName), na.rm = TRUE)]
     if(any(TimeUnit %chin% c("1min","5min","10min","15min","30min","45min"))) {
       CJList[[eval(DateColumnName)]] <- seq(from = MinDate, to = MaxDate, by = 60 * as.numeric(gsub("([0-9]+).*$", "\\1", TimeUnit)))
     } else {
@@ -492,8 +508,8 @@ TimeSeriesFill <- function(data = NULL,
   if(FillType == "maxmin") {
 
     # Date variable
-    MinDate <- data[, min(get(DateColumnName))]
-    MaxDate <- data[, max(get(DateColumnName)), by = c(eval(GroupVariables))][, min(V1)]
+    MinDate <- data[, min(get(DateColumnName), na.rm = TRUE)]
+    MaxDate <- data[, max(get(DateColumnName), na.rm = TRUE), by = c(eval(GroupVariables))][, min(V1)]
     if(any(TimeUnit %chin% c("1min","5min","10min","15min","30min","45min"))) {
       CJList[[eval(DateColumnName)]] <- seq(from = MinDate, to = MaxDate, by = 60 * as.numeric(gsub("([0-9]+).*$", "\\1", TimeUnit)))
     } else {
@@ -516,8 +532,8 @@ TimeSeriesFill <- function(data = NULL,
   if(FillType == "minmin") {
 
     # Date variables
-    MinDate <- data[, min(get(DateColumnName))]
-    MaxDate <- data[, max(get(DateColumnName)), by = c(eval(GroupVariables))][, min(V1)]
+    MinDate <- data[, min(get(DateColumnName), na.rm = TRUE)]
+    MaxDate <- data[, max(get(DateColumnName), na.rm = TRUE), by = c(eval(GroupVariables))][, min(V1)]
     if(any(TimeUnit %chin% c("1min","5min","10min","15min","30min","45min"))) {
       CJList[[eval(DateColumnName)]] <- seq(from = MinDate, to = MaxDate, by = 60 * as.numeric(gsub("([0-9]+).*$", "\\1", TimeUnit)))
     } else {

@@ -863,7 +863,7 @@ Test_LogPlus1 <- function(x) {
   sigma <- sd(trans_data, na.rm = TRUE)
   trans_data_standardized <- (trans_data - mu) / sigma
   ptest <- nortest::pearson.test(trans_data_standardized)
-  val <- list(Name = "LogPlus1", Data = trans_data, Lambda = NA, Normalized_Statistic = unname(ptest$statistic / ptest$df))
+  val <- list(Name = "LogPlus1", Data = trans_data, Lambda = abs(xx), Normalized_Statistic = unname(ptest$statistic / ptest$df))
   return(val)
 }
 
@@ -874,8 +874,8 @@ Test_LogPlus1 <- function(x) {
 #' @export
 #' @param x The data in numerical vector form
 #' @return Log results
-Apply_LogPlus1 <- function(x) {
-  return(log(x+1))
+Apply_LogPlus1 <- function(x, AbsXX) {
+  return(log(x+1+AbsXX))
 }
 
 #' Inverse LogPlus1 Transformation
@@ -885,8 +885,8 @@ Apply_LogPlus1 <- function(x) {
 #' @export
 #' @param x The data in numerical vector form
 #' @return Log results
-InvApply_LogPlus1 <- function(x) {
-  return(exp(x)-1)
+InvApply_LogPlus1 <- function(x, AbsXX) {
+  return(exp(x)-1-AbsXX)
 }
 
 #' Test Sqrt Transformation
@@ -1233,7 +1233,7 @@ AutoTransformationScore <- function(ScoringData,
       if(tolower(Type) != "inverse") {
         data.table::set(ScoringData, j = eval(colNames), value = Apply_LogPlus1(ScoringData[[eval(colNames)]]))
       } else {
-        data.table::set(ScoringData, j = eval(colNames), value = InvApply_LogPlus1(x = ScoringData[[eval(colNames)]]))
+        data.table::set(ScoringData, j = eval(colNames), value = InvApply_LogPlus1(x = ScoringData[[eval(colNames)]], AbsXX = Results[ColumnName == eval(colNames), Lambda]))
       }
     }
 

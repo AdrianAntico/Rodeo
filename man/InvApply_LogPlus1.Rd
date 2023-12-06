@@ -4,7 +4,7 @@
 \alias{InvApply_LogPlus1}
 \title{Inverse LogPlus1 Transformation}
 \usage{
-InvApply_LogPlus1(x)
+InvApply_LogPlus1(x, AbsXX)
 }
 \arguments{
 \item{x}{The data in numerical vector form}

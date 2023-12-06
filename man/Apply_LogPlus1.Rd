@@ -4,7 +4,7 @@
 \alias{Apply_LogPlus1}
 \title{Apply LogPlus1 Transformation}
 \usage{
-Apply_LogPlus1(x)
+Apply_LogPlus1(x, AbsXX)
 }
 \arguments{
 \item{x}{The data in numerical vector form}

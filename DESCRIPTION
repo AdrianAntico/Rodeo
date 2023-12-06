@@ -23,3 +23,4 @@ Packaged: 2023-03-15 14:00:00 UTC
 RoxygenNote: 7.2.3
 Author: Adrian Antico [aut, cre]
 ByteCompile: TRUE
+License: AGPL (>= 3)

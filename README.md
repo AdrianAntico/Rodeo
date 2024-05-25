@@ -9,7 +9,7 @@ R Optimized Data Engineering Operations
 
 Note: see vignette for examples and parameter definitions
 
-## Install AutoNLP
+## Install Rodeo
  
 ```r
 install.packages('bit64')

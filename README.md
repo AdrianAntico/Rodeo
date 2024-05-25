@@ -9,6 +9,22 @@ R Optimized Data Engineering Operations
 
 Note: see vignette for examples and parameter definitions
 
+## Install AutoNLP
+ 
+```r
+install.packages('bit64')
+install.packages('data.table')
+install.packages('collapse')
+install.packages('timeDate')
+install.packages('h2o')
+install.packages('Rfast')
+install.packages('combinat')
+install.packages('nortest')
+install.packages('lubridate')
+install.packages('fBasics')
+devtools::install_github("AdrianAntico/AutoNLP", upgrade = FALSE)
+```
+
 ## Automated feature engineering using data.table and collapse
 
 ### Character Type Data

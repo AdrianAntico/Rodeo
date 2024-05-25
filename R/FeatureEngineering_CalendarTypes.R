@@ -50,7 +50,7 @@ LB <- function(TimeAgg) {
 #' @examples
 #' \dontrun{
 #' # Create fake data with a Date column----
-#' data <- AutoQuant::FakeDataGenerator(
+#' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.75,
 #'   N = 25000L,
 #'   ID = 2L,
@@ -62,7 +62,7 @@ LB <- function(TimeAgg) {
 #' for(i in seq_len(20L)) {
 #'   print(i)
 #'   data <- data.table::rbindlist(
-#'     list(data, AutoQuant::FakeDataGenerator(
+#'     list(data, Rodeo::FakeDataGenerator(
 #'     Correlation = 0.75,
 #'     N = 25000L,
 #'     ID = 2L,
@@ -77,7 +77,7 @@ LB <- function(TimeAgg) {
 #' #   the second, minute, and hour selections since
 #' #   it is not timestamp data
 #' runtime <- system.time(
-#'   data <- AutoQuant::CreateCalendarVariables(
+#'   data <- Rodeo::CreateCalendarVariables(
 #'     data = data,
 #'     DateCols = "DateTime",
 #'     AsFactor = FALSE,
@@ -108,17 +108,6 @@ CreateCalendarVariables <- function(data,
   if(length(TimeUnits) == 0L || length(DateCols) == 0L) return(data)
 
   if(Debug) print('CreateHolidayVariables 1')
-
-  # Load data from file if CachePath is not NULL
-  if(length(CachePath) > 0L) {
-    if(Debug) print('CreateHolidayVariables 1.1')
-    data <- AutoQuant:::ReactiveLoadCSV(Infile = CachePath, Debug = Debug)
-    if(Debug) print('CreateHolidayVariables 1.2')
-    for(i in DateCols) if(class(data[[i]])[1L] %in% c('character')) {
-      if(Debug) print('CreateHolidayVariables 1.3')
-      data.table::set(data, j = eval(i), value = as.Date(data[[i]], format = "%m/%d/%y"))
-    }
-  }
 
   # Debug
   if(Debug) print('CreateHolidayVariables 2')
@@ -304,7 +293,7 @@ CreateCalendarVariables <- function(data,
 #' @examples
 #' \dontrun{
 #' # Create fake data with a Date----
-#' data <- AutoQuant::FakeDataGenerator(
+#' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.75,
 #'   N = 25000L,
 #'   ID = 2L,
@@ -316,7 +305,7 @@ CreateCalendarVariables <- function(data,
 #' for(i in seq_len(20L)) {
 #'   print(i)
 #'   data <- data.table::rbindlist(list(data,
-#'   AutoQuant::FakeDataGenerator(
+#'   Rodeo::FakeDataGenerator(
 #'     Correlation = 0.75,
 #'     N = 25000L,
 #'     ID = 2L,
@@ -328,7 +317,7 @@ CreateCalendarVariables <- function(data,
 #' }
 #' # Run function and time it
 #' runtime <- system.time(
-#'   data <- AutoQuant::CreateHolidayVariables(
+#'   data <- Rodeo::CreateHolidayVariables(
 #'     data,
 #'     DateCols = "DateTime",
 #'     LookbackDays = NULL,
@@ -351,18 +340,6 @@ CreateHolidayVariables <- function(data,
                                    Debug = FALSE) {
 
   if(Debug) print('CreateHolidayVariables 1')
-
-  if(length(CachePath) > 0L) {
-    if(Debug) {print('CreateHolidayVariables 1.1'); print(CachePath)}
-    data <- AutoQuant:::ReactiveLoadCSV(Infile = CachePath, Debug = Debug)
-    if(Debug) print(data)
-    if(Debug) print(class(data))
-    if(Debug) print('CreateHolidayVariables 1.2')
-    for(i in DateCols) if(class(data[[i]])[1L] %in% c('character')) {
-      if(Debug) print('CreateHolidayVariables 1.3')
-      data.table::set(data, j = eval(i), value = as.Date(data[[i]], format = "%m/%d/%y"))
-    }
-  }
 
   # Turn on full speed ahead----
   if(Debug) print('CreateHolidayVariables 2')
@@ -529,7 +506,7 @@ CreateHolidayVariables <- function(data,
 #'
 #' @examples
 #' \dontrun{
-#' Output <- AutoQuant:::CalendarVariables(
+#' Output <- Rodeo:::CalendarVariables(
 #'   data = data,
 #'   RunMode = "train",
 #'   ArgsList = ArgsList_FE,
@@ -554,7 +531,7 @@ CalendarVariables <- function(data = NULL,
   # Run function
   if(tolower(RunMode) == "train") {
     for(dat in ArgsList$Data$DateVariables) {
-      data <- AutoQuant::CreateCalendarVariables(
+      data <- Rodeo::CreateCalendarVariables(
         data = data,
         DateCols = dat,
         AsFactor = FALSE,
@@ -587,7 +564,7 @@ CalendarVariables <- function(data = NULL,
 
     # Run function
     for(dat in DateVariables) {
-      data <- AutoQuant::CreateCalendarVariables(
+      data <- Rodeo::CreateCalendarVariables(
         data = data,
         DateCols = ArgsList$CalendarVariables$DateCols,
         AsFactor = ArgsList$CalendarVariables$AsFactor,
@@ -625,7 +602,7 @@ CalendarVariables <- function(data = NULL,
 #'
 #' @examples
 #' \dontrun{
-#' Output <- AutoQuant:::HolidayVariables(
+#' Output <- Rodeo:::HolidayVariables(
 #'   data = data,
 #'   RunMode = "train",
 #'   ArgsList = ArgsList,
@@ -649,7 +626,7 @@ HolidayVariables <- function(data = NULL,
     tempnames <- names(data.table::copy(data))
     for(dat in ArgsList$Data$DateVariables) {
       for(i in seq_along(ArgsList$FE_Args$Holiday_Variables$HolidayVariables)) {
-        data <- AutoQuant::CreateHolidayVariables(
+        data <- Rodeo::CreateHolidayVariables(
           data = data,
           DateCols = dat,
           LookbackDays = ArgsList$FE_Args$Holiday_Variables$LookBackDays,
@@ -684,7 +661,7 @@ HolidayVariables <- function(data = NULL,
     # Run function
     for(dat in ArgsList$FE_HolidayVariables$DateCols) {
       for(i in seq_along(ArgsList$FE_HolidayVariables$HolidaySets)) {
-        data <- AutoQuant::CreateHolidayVariables(
+        data <- Rodeo::CreateHolidayVariables(
           data = data,
           DateCols = ArgsList$HolidayVariables$DateCols,
           LookbackDays = ArgsList$HolidayVariables$LookbackDays,

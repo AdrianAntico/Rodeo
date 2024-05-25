@@ -16,7 +16,7 @@
 #' @examples
 #' \donttest{
 #' # Create fake data
-#' data <- AutoQuant::FakeDataGenerator(
+#' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.85,
 #'   N = 1000,
 #'   ID = 2,
@@ -26,7 +26,7 @@
 #'   MultiClass = FALSE)
 #'
 #' # Run data partitioning function
-#' dataSets <- AutoQuant::AutoDataPartition(
+#' dataSets <- Rodeo::AutoDataPartition(
 #'   data,
 #'   NumDataSets = 3L,
 #'   Ratios = c(0.70,0.20,0.10),
@@ -226,7 +226,7 @@ AutoDataPartition <- function(data,
 #' @examples
 #' \dontrun{
 #' # Create fake data
-#' data <- AutoQuant::FakeDataGenerator(
+#' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.75,
 #'   N = 250000L,
 #'   ID = 2L,
@@ -344,7 +344,7 @@ ModelDataPrep <- function(data,
 #'
 #' @examples
 #' \dontrun{
-#' Output <- AutoQuant:::PartitionData(
+#' Output <- Rodeo:::PartitionData(
 #'   data = data,
 #'   ArgsList = ArgsList)
 #' TrainData <- Output$TrainData
@@ -360,7 +360,7 @@ PartitionData <- function(data = NULL,
   Start <- Sys.time()
 
   # Run function
-  DataSets <- AutoQuant::AutoDataPartition(
+  DataSets <- Rodeo::AutoDataPartition(
     data = data,
     NumDataSets = length(ArgsList[['FE_Args']][['Partition']][['PartitionRatios']]),
     Ratios = ArgsList[['FE_Args']][['Partition']][['PartitionRatios']],

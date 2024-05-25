@@ -205,7 +205,7 @@ Interact <- function(x, i, NumVarOperations, Standardize) {
 #' #########################################
 #'
 #' # Create fake data
-#' data <- AutoQuant::FakeDataGenerator(
+#' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.70,
 #'   N = 50000,
 #'   ID = 2L,
@@ -225,7 +225,7 @@ Interact <- function(x, i, NumVarOperations, Standardize) {
 #'                      which(unlist(lapply(data, is.integer))))]
 #'
 #' # Model Training Feature Engineering
-#' system.time(data <- AutoQuant::AutoInteraction(
+#' system.time(data <- Rodeo::AutoInteraction(
 #'   data = data,
 #'   NumericVars = Cols,
 #'   InteractionDepth = 4,
@@ -246,7 +246,7 @@ Interact <- function(x, i, NumVarOperations, Standardize) {
 #' ########################################
 #'
 #' # Create fake data
-#' data <- AutoQuant::FakeDataGenerator(
+#' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.70,
 #'   N = 1000,
 #'   ID = 2L,
@@ -265,7 +265,7 @@ Interact <- function(x, i, NumVarOperations, Standardize) {
 #' data <- data[1L]
 #'
 #' # Model Scoring Feature Engineering
-#' system.time(data <- AutoQuant::AutoInteraction(
+#' system.time(data <- Rodeo::AutoInteraction(
 #'   data = data,
 #'   NumericVars = names(data)[
 #'     c(which(unlist(lapply(data, is.numeric))),
@@ -945,7 +945,7 @@ InvApply_Sqrt <- function(x) {
 #' @examples
 #' \dontrun{
 #' # Create Fake Data
-#' data <- AutoQuant::FakeDataGenerator(
+#' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.85,
 #'   N = 25000,
 #'   ID = 2L,
@@ -960,7 +960,7 @@ InvApply_Sqrt <- function(x) {
 #' print(Cols)
 #'
 #' # Run function
-#' data <- AutoQuant::AutoTransformationCreate(
+#' data <- Rodeo::AutoTransformationCreate(
 #'   data,
 #'   ColumnNames = Cols,
 #'   Methods = c("YeoJohnson", "BoxCox", "Asinh", "Log", "LogPlus1", "Sqrt", "Asin", "Logit", "Identity"),
@@ -1154,7 +1154,7 @@ AutoTransformationCreate <- function(data,
 #' @examples
 #' \dontrun{
 #' # Create Fake Data
-#' data <- AutoQuant::FakeDataGenerator(
+#' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.85,
 #'   N = 25000,
 #'   ID = 2L,
@@ -1171,7 +1171,7 @@ AutoTransformationCreate <- function(data,
 #' data <- data[1]
 #'
 #' # Run function
-#' Output <- AutoQuant::AutoTransformationCreate(
+#' Output <- Rodeo::AutoTransformationCreate(
 #'   data,
 #'   ColumnNames = Cols,
 #'   Methods = c("YeoJohnson", "BoxCox", "Asinh", "Log", "LogPlus1", "Sqrt", "Asin", "Logit", "Identity"),
@@ -1184,7 +1184,7 @@ AutoTransformationCreate <- function(data,
 #' TransInfo <- Output$FinalResults
 #'
 #' # Back Transform
-#' data <- AutoQuant::AutoTransformationScore(
+#' data <- Rodeo::AutoTransformationScore(
 #'   data,
 #'   FinalResults = TransInfo,
 #'   Path = NULL,
@@ -1301,7 +1301,7 @@ AutoTransformationScore <- function(ScoringData,
 #'
 #' @examples
 #' \dontrun{
-#' Output <- AutoQuant:::CreateInteractions(
+#' Output <- Rodeo:::CreateInteractions(
 #'   data = data,
 #'   RunMode = "train",
 #'   ArgsList = ArgsList_FE,
@@ -1334,7 +1334,7 @@ CreateInteractions <- function(data = NULL,
     }
 
     # Run function
-    data <- AutoQuant::AutoInteraction(
+    data <- Rodeo::AutoInteraction(
       data = data,
       NumericVars = ArgsList$Data$InteractionVariables,
       InteractionDepth = ArgsList$FE_Args$Interaction$InteractionDepth,
@@ -1365,7 +1365,7 @@ CreateInteractions <- function(data = NULL,
     Start <- Sys.time()
 
     # Run function
-    data <- AutoQuant::AutoInteraction(
+    data <- Rodeo::AutoInteraction(
       data = data,
       NumericVars = ArgsList$FE_Interaction$NumericVars,
       InteractionDepth = ArgsList$FE_Interaction$InteractionDepth,

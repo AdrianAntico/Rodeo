@@ -20,7 +20,7 @@
 #' @examples
 #' \dontrun{
 #  # Create fake data with 10 categorical columns
-#' data <- AutoQuant::FakeDataGenerator(
+#' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.85,
 #'   N = 25000,
 #'   ID = 2L,
@@ -31,7 +31,7 @@
 #'   MultiClass = FALSE)
 #'
 #' # Create dummy variables
-#' data <- AutoQuant::DummifyDT(
+#' data <- Rodeo::DummifyDT(
 #'   data = data,
 #'   cols = c("Factor_1",
 #'            "Factor_2",
@@ -53,7 +53,7 @@
 #'   ReturnFactorLevels = FALSE)
 #'
 #' # Create Fake Data for Scoring Replication
-#' data <- AutoQuant::FakeDataGenerator(
+#' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.85,
 #'   N = 25000,
 #'   ID = 2L,
@@ -64,7 +64,7 @@
 #'   MultiClass = FALSE)
 #'
 #' # Scoring Version
-#' data <- AutoQuant::DummifyDT(
+#' data <- Rodeo::DummifyDT(
 #'   data = data,
 #'   cols = c("Factor_1",
 #'            "Factor_2",
@@ -224,7 +224,7 @@ DummifyDT <- function(data,
 #'
 #' @examples
 #' \dontrun{
-#' Output <- AutoQuant::DummyVariables(
+#' Output <- Rodeo::DummyVariables(
 #'   data = data,
 #'   RunMode = "train",
 #'   ArgsList = ArgsList_FE,
@@ -332,7 +332,7 @@ DummyVariables <- function(data,
 #' @examples
 #' \dontrun{
 #' # Create fake data with 10 categorical
-#' data <- AutoQuant::FakeDataGenerator(
+#' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.85,
 #'   N = 1000000,
 #'   ID = 2L,
@@ -358,7 +358,7 @@ DummyVariables <- function(data,
 #' test <- data.table::copy(data)
 #'
 #' # Run in Train Mode
-#' data <- AutoQuant::CategoricalEncoding(
+#' data <- Rodeo::CategoricalEncoding(
 #'   data = data,
 #'   ML_Type = "classification",
 #'   GroupVariables = paste0("Factor_", 1:10),
@@ -375,7 +375,7 @@ DummyVariables <- function(data,
 #' print(data)
 #'
 #' # Run in Score Mode by pulling in the csv's
-#' test <- AutoQuant::CategoricalEncoding(
+#' test <- Rodeo::CategoricalEncoding(
 #'   data = data,
 #'   ML_Type = "classification",
 #'   GroupVariables = paste0("Factor_", 1:10),
@@ -808,12 +808,12 @@ CategoricalEncoding <- function(data = NULL,
         if(Debug) print('Categorical Encoding ME 2.ab')
 
         nam <- seq_along(names(data))
-        Output <- Rappture::Utils.Nest(data, GroupVariables)
+        Output <- Quantico::Utils.Nest(data, GroupVariables)
 
         if(Debug) print('Categorical Encoding ME 2.ac')
 
         data <- Output$data; res <- Output$NestVars
-        Output <- Rappture::MEOW(data, TargetType = 'regression', TargetVariable = TargetVariable, RandomEffects = res, CollapseEPV = TRUE, Debug = TRUE)
+        Output <- MEOW(data, TargetType = 'regression', TargetVariable = TargetVariable, RandomEffects = res, CollapseEPV = TRUE, Debug = TRUE)
 
         if(Debug) print('Categorical Encoding ME 2.ad')
 
@@ -852,7 +852,7 @@ CategoricalEncoding <- function(data = NULL,
 
         ComponentList[[eval(GroupValue)]] <- x
       } else {
-        Output <- Rappture::MEOW(data = data, TargetType = 'regression', TargetVariable = TargetVariable, RandomEffects = GroupVariables, CollapseEPV = TRUE)
+        Output <- MEOW(data = data, TargetType = 'regression', TargetVariable = TargetVariable, RandomEffects = GroupVariables, CollapseEPV = TRUE)
         data <- Output$data; ComponentList[[eval(GroupValue)]] <- Output$ComponentList
       }
 
@@ -865,7 +865,7 @@ CategoricalEncoding <- function(data = NULL,
       # Create temp cols
       if(length(GroupVariables) > 0L) {
         nam <- names(data.table::copy(data))
-        Output <- Rappture::Utils.Nest(data, GroupVariables)
+        Output <- Quantico::Utils.Nest(data, GroupVariables)
         data <- Output$data; res <- Output$NestVars; rm(Output)
       }
 
@@ -1193,7 +1193,7 @@ Encoding <- function(RunMode = 'train',
 #' data[, Mean := mean(gpa), by = c('sex','semester','year','student')]
 #'
 #' # Run function
-#' TestModel <- AutoQuant::AutoCatBoostRegression(
+#' TestModel <- Rodeo::AutoCatBoostRegression(
 #'
 #'   # GPU or CPU and the number of available GPUs
 #'   task_type = 'GPU', NumGPUs = 1,
@@ -1212,7 +1212,7 @@ Encoding <- function(RunMode = 'train',
 #'   L2_Leaf_Reg = 10,
 #'   model_size_reg = 2)
 #'
-#' Output <- Rappture::MEOW(
+#' Output <- MEOW(
 #'   data = TestModel$TrainData,
 #'   TargetType = 'regression',
 #'   TargetVariable = TestModel$ArgsList$TargetColumnName,
@@ -1226,7 +1226,7 @@ Encoding <- function(RunMode = 'train',
 #'   PolyN = NULL,
 #'   Debug = FALSE)
 #'
-#' Output <- Rappture::MEOW(
+#' Output <- MEOW(
 #'   data = Output$data,
 #'   TargetType = 'regression',
 #'   TargetVariable = TestModel$ArgsList$TargetColumnName,
@@ -1598,7 +1598,7 @@ MEOW <- function(data = NULL,
   # Fixed Effects Time
   # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
   if(length(FixedEffects) > 0L && Lmer) {
-    Output <- Rappture::LMER(data, TargetVariable = TargetVariable, FixedEffects = FixedEffects, RandomEffects = RandomEffectsOld, Type = LmerType, Poly = PolyN, Family = if(TargetType == 'regression') 'gaussian' else 'binomial')
+    Output <- Quantico::LMER(data, TargetVariable = TargetVariable, FixedEffects = FixedEffects, RandomEffects = RandomEffectsOld, Type = LmerType, Poly = PolyN, Family = if(TargetType == 'regression') 'gaussian' else 'binomial')
     return(Output)
   } else if(length(FixedEffects) > 0L && !Lmer) {
     if(length(PolyN) == 1L) {
@@ -1608,7 +1608,7 @@ MEOW <- function(data = NULL,
     }
     return(list(
       data = data,
-      DensityPlot = function(MeasureVariables) Rappture::Plot.Density(data = data, GroupVariables = RandomEffectsOld, MeasureVars = MeasureVariables)
+      DensityPlot = function(MeasureVariables) Quantico::Plot.Density(data = data, GroupVariables = RandomEffectsOld, MeasureVars = MeasureVariables)
     ))
   } else {
     FactorLevelsList <- data[, mean(get(paste0(RandomEffectsOld[length(RandomEffectsOld)], "_MixedEffects"))), by = c(RandomEffectsOld)]

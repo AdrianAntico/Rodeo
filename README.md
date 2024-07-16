@@ -23,6 +23,7 @@ install.packages('nortest')
 install.packages('lubridate')
 install.packages('fBasics')
 devtools::install_github("AdrianAntico/AutoNLP", upgrade = FALSE)
+devtools::install_github("AdrianAntico/Rodeo", upgrade = FALSE)
 ```
 
 ## Automated feature engineering using data.table and collapse

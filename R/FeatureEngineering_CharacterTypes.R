@@ -953,11 +953,9 @@ EncodeCharacterVariables <- function(RunMode = 'train',
       temp <- data.table::rbindlist(list(TrainData, ValidationData, TestData), use.names = TRUE, fill = TRUE)
     } else if(!is.null(ValidationData)) {
 
-
       data.table::set(TrainData, j = "ID_Factorizer", value = "TRAIN")
       data.table::set(ValidationData, j = "ID_Factorizer", value = "VALIDATE")
       temp <- data.table::rbindlist(list(TrainData, ValidationData), use.names = TRUE, fill = TRUE)
-
 
     } else {
       data.table::set(TrainData, j = "ID_Factorizer", value = "TRAIN")
@@ -968,18 +966,23 @@ EncodeCharacterVariables <- function(RunMode = 'train',
     temp <- TrainData
   }
 
+  if(EncodeMethod == "target") {
+    EncodeMethod <- "target_encoding"
+  } else if(EncodeMethod == "credibility_encoding") {
+    EncodeMethod <- "credibility"
+  }
+
   # Encode
   if(EncodeMethod == "binary") {
     if(Debug) print("EncodeCharacterVariables 3.a")
     temp <- DummifyDT(data=temp, cols=CategoricalVariableNames, KeepFactorCols=KeepCategoricalVariables, OneHot=FALSE, SaveFactorLevels=if(!is.null(MetaDataPath)) TRUE else FALSE, ReturnFactorLevels=ReturnMetaData, SavePath=MetaDataPath, ImportFactorLevels=FALSE, FactorLevelsList=MetaDataList)
     MetaDataList <- temp$FactorLevelsList
     temp <- temp$data
+
   } else if(tolower(EncodeMethod) %chin% c('m_estimator', 'credibility', 'woe', 'target_encoding','meow')) {
 
     if(Debug) print("EncodeCharacterVariables 3.b")
     if(RunMode == 'train') temp_train <- temp[ID_Factorizer == "TRAIN"] else temp_train <- temp
-
-
 
     temp1 <- CategoricalEncoding(data=temp_train, ML_Type=ModelType, GroupVariables=CategoricalVariableNames, TargetVariable=TargetVariableName, Method=EncodeMethod, SavePath=MetaDataPath, Scoring=Score, ImputeValueScoring=ImputeMissingValue, ReturnFactorLevelList=TRUE, SupplyFactorLevelList=MetaDataList, KeepOriginalFactors=KeepCategoricalVariables, Debug = Debug)
     MetaDataList <- temp1$FactorCompenents
@@ -997,10 +1000,6 @@ EncodeCharacterVariables <- function(RunMode = 'train',
     # ReturnFactorLevelList=TRUE
     # SupplyFactorLevelList=MetaDataList
     # KeepOriginalFactors=KeepCategoricalVariables
-
-
-
-
 
     # Encoding
     if(!is.null(ValidationData) && !is.null(TestData)) {

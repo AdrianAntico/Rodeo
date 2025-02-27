@@ -152,7 +152,8 @@ CreateCalendarVariables <- function(data,
     if(length(TimeList) > 0L) {
       if(any(tolower(TimeList[[i]]) %chin% c("second", "minute", "hour"))) {
         data.table::set(data, j = paste0("TIME_", eval(DateCols[i])), value = data.table::as.ITime(data[[eval(DateCols[i])]]))
-      } else if(any(tolower(TimeList[[i]]) %chin% c("wday","mday","yday","week","isoweek","wom","month","quarter","year"))) {
+      }
+      if(any(tolower(TimeList[[i]]) %chin% c("wday","mday","yday","week","isoweek","wom","month","quarter","year"))) {
         data.table::set(data, j = paste0("DATE_", eval(DateCols[i])), value = data.table::as.IDate(data[[eval(DateCols[i])]]))
       }
     }
@@ -167,7 +168,11 @@ CreateCalendarVariables <- function(data,
 
     # Get unique date values in table and then merge back to source data at the end one time ----
     if(any(tolower(TimeList[[i]]) %chin% c("second", "minute", "hour"))) {
-      DataCompute <- unique(data[, .SD, .SDcols = c(paste0("TIME_", DateColRef), paste0("DATE_", DateColRef))])
+      if (all(c(paste0("TIME_", DateColRef), paste0("DATE_", DateColRef)) %chin% names(data))) {
+        DataCompute <- unique(data[, .SD, .SDcols = c(paste0("TIME_", DateColRef), paste0("DATE_", DateColRef))])
+      } else if (paste0("TIME_", DateColRef) %chin% names(data)) {
+        DataCompute <- unique(data[, .SD, .SDcols = paste0("TIME_", DateColRef)])
+      }
     } else {
       DataCompute <- unique(data[, .SD, .SDcols = c(paste0("DATE_", DateColRef))])
     }
@@ -252,7 +257,12 @@ CreateCalendarVariables <- function(data,
 
     # Merge back----
     if(any(tolower(TimeList[[i]]) %chin% c("second", "minute", "hour"))) {
-      data <- merge(data, DataCompute, by = c(paste0("TIME_", DateColRef), paste0("DATE_", DateColRef)), all = FALSE)
+      if (all(c(paste0("TIME_", DateColRef), paste0("DATE_", DateColRef)) %chin% names(DataCompute))) {
+        data <- merge(data, DataCompute, by = c(paste0("TIME_", DateColRef), paste0("DATE_", DateColRef)), all = FALSE)
+      } else if (paste0("TIME_", DateColRef) %chin% names(DataCompute)) {
+        data <- merge(data, DataCompute, by = paste0("TIME_", DateColRef), all = FALSE)
+      }
+
     } else {
       data <- merge(data, DataCompute, by = c(paste0("DATE_", DateColRef)), all = FALSE)
       data[, paste0("DATE_", DateColRef) := as.Date(get(paste0("DATE_", DateColRef)))]

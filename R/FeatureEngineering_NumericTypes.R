@@ -1231,7 +1231,7 @@ AutoTransformationScore <- function(ScoringData,
     # LogPlus1----
     if(Results[ColumnName == eval(colNames), MethodName] == "LogPlus1") {
       if(tolower(Type) != "inverse") {
-        data.table::set(ScoringData, j = eval(colNames), value = Apply_LogPlus1(ScoringData[[eval(colNames)]]))
+        data.table::set(ScoringData, j = eval(colNames), value = Apply_LogPlus1(ScoringData[[eval(colNames)]], AbsXX = Results[ColumnName == eval(colNames), Lambda]))
       } else {
         data.table::set(ScoringData, j = eval(colNames), value = InvApply_LogPlus1(x = ScoringData[[eval(colNames)]], AbsXX = Results[ColumnName == eval(colNames), Lambda]))
       }

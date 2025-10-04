@@ -1,4 +1,3 @@
-
 #' @title AutoDataPartition
 #'
 #' @description This function will take your ratings matrix and model and score your data in parallel.
@@ -18,7 +17,7 @@
 #' # Create fake data
 #' data <- Rodeo::FakeDataGenerator(
 #'   Correlation = 0.85,
-#'   N = 1000,
+#'   N = 1000000,
 #'   ID = 2,
 #'   ZIP = 0,
 #'   AddDate = FALSE,
@@ -184,8 +183,8 @@ AutoDataPartition <- function(data,
       } else {
         RowEnd <- data[, .N, by = c(eval(StratifyColumnNames))][1L, N]
         NumRows <- floor(Ratios[i] * Rows)
-        DataCollect[[paste0("TestData", NumDataSets - 2L)]] <- data[ID %in% (RowEnd - NumRows + 1L):RowEnd]
-        DataCollect[[paste0("TestData", NumDataSets - 2L)]] <- DataCollect[[paste0("TestData", NumDataSets - 2L)]][, ID := NULL]
+        DataCollect[[paste0("TestData", i - 2L)]] <- data[ID %in% (RowEnd - NumRows + 1L):RowEnd]
+        DataCollect[[paste0("TestData", i - 2L)]] <- DataCollect[[paste0("TestData", i - 2L)]][, ID := NULL]
         data <- data[!(ID %in% (RowEnd - NumRows + 1L):RowEnd)]
       }
     }

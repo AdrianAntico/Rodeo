@@ -988,19 +988,6 @@ EncodeCharacterVariables <- function(RunMode = 'train',
     MetaDataList <- temp1$FactorCompenents
     if(RunMode == 'train') temp_train <- temp1$data else temp_train <- temp1
 
-    # Args for debugging
-    # data=temp_train
-    # ML_Type=ModelType
-    # GroupVariables=CategoricalVariableNames
-    # TargetVariable=TargetVariableName
-    # Method=EncodeMethod
-    # SavePath=MetaDataPath
-    # Scoring=Score
-    # ImputeValueScoring=ImputeMissingValue
-    # ReturnFactorLevelList=TRUE
-    # SupplyFactorLevelList=MetaDataList
-    # KeepOriginalFactors=KeepCategoricalVariables
-
     # Encoding
     if(!is.null(ValidationData) && !is.null(TestData)) {
       if(Debug) print("EncodeCharacterVariables 3.c")
@@ -1014,23 +1001,6 @@ EncodeCharacterVariables <- function(RunMode = 'train',
       temp_validate <- temp[ID_Factorizer == "VALIDATE"]
       temp2 <- CategoricalEncoding(data=temp_validate, ML_Type=ModelType, GroupVariables=CategoricalVariableNames, TargetVariable=TargetVariableName, Method=EncodeMethod, SavePath=MetaDataPath, Scoring=TRUE, ImputeValueScoring=ImputeMissingValue, ReturnFactorLevelList=FALSE, SupplyFactorLevelList=MetaDataList, KeepOriginalFactors=KeepCategoricalVariables)
       temp <- data.table::rbindlist(list(temp2,temp_train), use.names = TRUE, fill = TRUE)
-
-
-      # QA values
-      # data=temp_validate
-      # ML_Type=ModelType
-      # GroupVariables=CategoricalVariableNames
-      # TargetVariable=TargetVariableName
-      # Method=EncodeMethod
-      # SavePath=MetaDataPath
-      # Scoring=TRUE
-      # ImputeValueScoring=ImputeMissingValue
-      # ReturnFactorLevelList=FALSE
-      # SupplyFactorLevelList=MetaDataList
-      # KeepOriginalFactors=KeepCategoricalVariables
-
-
-
     } else {
       if(Debug) print("EncodeCharacterVariables 3.e")
       temp <- temp_train

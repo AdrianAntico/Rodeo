@@ -502,6 +502,57 @@ CreateHolidayVariables <- function(data,
   }
 }
 
+#' Add Number of Weekdays in Month
+#'
+#' @description
+#' Given a data.table containing a date column, this function adds a new column
+#' containing the number of weekdays (Monday–Friday) in that date's month.
+#'
+#' @param DT A data.table.
+#' @param date_col The name of the date column (unquoted or quoted).
+#' @param new_col Name of the new column to create. Default is `"weekdays_in_month"`.
+#'
+#' @return
+#' Returns the modified data.table with one additional column containing the
+#' weekday count for each observation's corresponding month.
+#'
+#' @examples
+#' library(data.table)
+#' DT <- data.table(date = as.Date(c("2024-01-05", "2024-01-20")))
+#' add_weekdays_in_month(DT, date)
+#'
+#' @export
+weekdays_in_month <- function(data, date_col, new_col = "weekdays_in_month") {
+  stopifnot(data.table::is.data.table(data))
+
+  date_col <- deparse(substitute(date_col))
+
+  # Convert to Date if not already
+  data[, (date_col) := as.Date(get(date_col))]
+
+  # Internal helper: count weekdays in month
+  count_weekdays <- function(d) {
+    y <- data.table::year(d)
+    m <- data.table::month(d)
+
+    # First and last day of month
+    first_day <- as.Date(sprintf("%04d-%02d-01", y, m))
+    last_day  <- as.Date(first_day + months(1) - 1)
+
+    # Sequence of days
+    days <- seq(first_day, last_day, by = "day")
+
+    # Weekdays are 1 (Mon) to 5 (Fri)
+    sum(data.table::wday(days, week_start = 1) <= 5)
+  }
+
+  # Compute weekday count by month-year pair (avoids recomputation)
+  data[, (new_col) := count_weekdays(get(date_col)), by = .(year(get(date_col)), month(get(date_col)))]
+
+  return(data)
+}
+
+
 #' @title CalendarVariables
 #'
 #' @description Create calendar variables

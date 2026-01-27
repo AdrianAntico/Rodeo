@@ -1761,7 +1761,7 @@ DT_GDL_Feature_Engineering <- function(data,
         MA_Names <- c()
         for(t in Targets) for(j in seq_along(periods)) MA_Names <- c(MA_Names, paste0("Mean_", periods[j],"_", t))
         data[, paste0(MA_Names) := data.table::frollmean(
-          x = .SD, n = periods, fill = NA, algo = "fast", align = "right", na.rm = TRUE, hasNA = TRUE, adaptive = FALSE),
+          x = .SD, n = periods, fill = NA, algo = "fast", align = "right", na.rm = TRUE, adaptive = FALSE),
           by = c(groupingVars[i]), .SDcols = c(Targets)]
       }
 
@@ -1845,7 +1845,7 @@ DT_GDL_Feature_Engineering <- function(data,
       periods <- periods[periods > 1L]
       MA_Names <- c()
       for(t in Targets) for(j in seq_along(periods)) MA_Names <- c(MA_Names, paste0("Mean_", periods[j], "_", t))
-      data[, paste0(MA_Names) := data.table::frollmean(x = .SD, n = periods, fill = NA, algo = "fast", align = "right", na.rm = TRUE, hasNA = TRUE, adaptive = FALSE), .SDcols = c(Targets)]
+      data[, paste0(MA_Names) := data.table::frollmean(x = .SD, n = periods, fill = NA, algo = "fast", align = "right", na.rm = TRUE, adaptive = FALSE), .SDcols = c(Targets)]
     }
 
     # SD stats ----
@@ -2564,7 +2564,7 @@ Partial_DT_GDL_Feature_Engineering2 <- function(data,
         MA_Names <- c()
         for(t in Targets) for(j in seq_along(periods)) MA_Names <- c(MA_Names, paste0("Mean","_", periods[j],"_", t))
         data1[, paste0(MA_Names) := data.table::frollmean(
-          x = .SD, n = periods, fill = NA, algo = "fast", align = "right", na.rm = TRUE, hasNA = TRUE, adaptive = FALSE),
+          x = .SD, n = periods, fill = NA, algo = "fast", align = "right", na.rm = TRUE, adaptive = FALSE),
           by = c(groupingVars[i]), .SDcols = c(Targets)]
       }
 
@@ -2687,7 +2687,7 @@ Partial_DT_GDL_Feature_Engineering2 <- function(data,
       periods <- periods[periods > 1L]
       MA_Names <- c()
       for(t in Targets) for(j in seq_along(periods)) MA_Names <- c(MA_Names, paste0("Mean_", periods[j], "_", t))
-      data[, paste0(MA_Names) := data.table::frollmean(x = .SD, n = periods, fill = NA, algo = "fast", align = "right", na.rm = TRUE, hasNA = TRUE, adaptive = FALSE), .SDcols = c(Targets)]
+      data[, paste0(MA_Names) := data.table::frollmean(x = .SD, n = periods, fill = NA, algo = "fast", align = "right", na.rm = TRUE, adaptive = FALSE), .SDcols = c(Targets)]
     }
 
     # SD stats ----

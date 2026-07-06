@@ -42,7 +42,7 @@ AutoClusteringScoring adds a column to your original data with a cluster number 
 #########################
 
 # Create fake data
-data <- AutoQuant::FakeDataGenerator(
+data <- Rodeo::FakeDataGenerator(
   Correlation = 0.85,
   N = 1000,
   ID = 2,
@@ -52,7 +52,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Run function
-data <- AutoQuant::AutoClustering(
+data <- Rodeo::AutoClustering(
   data,
   FeatureColumns = names(data)[2:(ncol(data)-1)],
   ModelID = 'TestModel',
@@ -76,7 +76,7 @@ data <- AutoQuant::AutoClustering(
 Sys.sleep(10)
 
 # Create fake data
-data <- AutoQuant::FakeDataGenerator(
+data <- Rodeo::FakeDataGenerator(
   Correlation = 0.85,
   N = 1000,
   ID = 2,
@@ -86,7 +86,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Run function
-data <- AutoQuant::AutoClusteringScoring(
+data <- Rodeo::AutoClusteringScoring(
   data,
   FeatureColumns = names(data)[2:(ncol(data)-1)],
   ModelID = 'TestModel',
@@ -100,8 +100,8 @@ data <- AutoQuant::AutoClusteringScoring(
 \seealso{
 Other Unsupervised Learning: 
 \code{\link{AutoClustering}()},
-\code{\link{H2OIsolationForestScoring}()},
-\code{\link{H2OIsolationForest}()}
+\code{\link{H2OIsolationForest}()},
+\code{\link{H2OIsolationForestScoring}()}
 }
 \author{
 Adrian Antico

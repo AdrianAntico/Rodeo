@@ -50,7 +50,7 @@ H2OIsolationForestScoring for dimensionality reduction and / or anomaly detectio
 \examples{
 \dontrun{
 # Create simulated data
-data <- AutoQuant::FakeDataGenerator(
+data <- Rodeo::FakeDataGenerator(
   Correlation = 0.70,
   N = 50000,
   ID = 2L,
@@ -63,7 +63,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Run algo
-data <- AutoQuant::H2OIsolationForest(
+data <- Rodeo::H2OIsolationForest(
   data,
   Features = names(data)[2L:ncol(data)],
   IDcols = c("Adrian", "IDcol_1", "IDcol_2"),
@@ -86,7 +86,7 @@ data <- AutoQuant::H2OIsolationForest(
 data[, eval(names(data)[17:ncol(data)]) := NULL]
 
 # Run algo
-Outliers <- AutoQuant::H2OIsolationForestScoring(
+Outliers <- Rodeo::H2OIsolationForestScoring(
   data,
   Features = names(data)[2:ncol(data)],
   IDcols = c("Adrian", "IDcol_1", "IDcol_2"),
@@ -102,8 +102,8 @@ Outliers <- AutoQuant::H2OIsolationForestScoring(
 }
 \seealso{
 Other Unsupervised Learning: 
-\code{\link{AutoClusteringScoring}()},
 \code{\link{AutoClustering}()},
+\code{\link{AutoClusteringScoring}()},
 \code{\link{H2OIsolationForest}()}
 }
 \author{

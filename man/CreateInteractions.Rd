@@ -28,7 +28,7 @@ Create interaction variables
 }
 \examples{
 \dontrun{
-Output <- AutoQuant:::CreateInteractions(
+Output <- Rodeo:::CreateInteractions(
   data = data,
   RunMode = "train",
   ArgsList = ArgsList_FE,

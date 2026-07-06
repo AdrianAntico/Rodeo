@@ -57,7 +57,7 @@ data[, semester := as.factor(semester)]
 data[, Mean := mean(gpa), by = c('sex','semester','year','student')]
 
 # Run function
-TestModel <- AutoQuant::AutoCatBoostRegression(
+TestModel <- Rodeo::AutoCatBoostRegression(
 
   # GPU or CPU and the number of available GPUs
   task_type = 'GPU', NumGPUs = 1,
@@ -76,7 +76,7 @@ TestModel <- AutoQuant::AutoCatBoostRegression(
   L2_Leaf_Reg = 10,
   model_size_reg = 2)
 
-Output <- Rappture::MEOW(
+Output <- MEOW(
   data = TestModel$TrainData,
   TargetType = 'regression',
   TargetVariable = TestModel$ArgsList$TargetColumnName,
@@ -90,7 +90,7 @@ Output <- Rappture::MEOW(
   PolyN = NULL,
   Debug = FALSE)
 
-Output <- Rappture::MEOW(
+Output <- MEOW(
   data = Output$data,
   TargetType = 'regression',
   TargetVariable = TestModel$ArgsList$TargetColumnName,

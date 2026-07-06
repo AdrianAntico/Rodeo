@@ -28,7 +28,7 @@ Create holiday variables
 }
 \examples{
 \dontrun{
-Output <- AutoQuant:::HolidayVariables(
+Output <- Rodeo:::HolidayVariables(
   data = data,
   RunMode = "train",
   ArgsList = ArgsList,

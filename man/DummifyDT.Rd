@@ -52,7 +52,7 @@ DummifyDT creates dummy variables for the selected columns. Either one-hot encod
 }
 \examples{
 \dontrun{
-data <- AutoQuant::FakeDataGenerator(
+data <- Rodeo::FakeDataGenerator(
   Correlation = 0.85,
   N = 25000,
   ID = 2L,
@@ -63,7 +63,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Create dummy variables
-data <- AutoQuant::DummifyDT(
+data <- Rodeo::DummifyDT(
   data = data,
   cols = c("Factor_1",
            "Factor_2",
@@ -85,7 +85,7 @@ data <- AutoQuant::DummifyDT(
   ReturnFactorLevels = FALSE)
 
 # Create Fake Data for Scoring Replication
-data <- AutoQuant::FakeDataGenerator(
+data <- Rodeo::FakeDataGenerator(
   Correlation = 0.85,
   N = 25000,
   ID = 2L,
@@ -96,7 +96,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Scoring Version
-data <- AutoQuant::DummifyDT(
+data <- Rodeo::DummifyDT(
   data = data,
   cols = c("Factor_1",
            "Factor_2",
@@ -120,20 +120,20 @@ data <- AutoQuant::DummifyDT(
 }
 \seealso{
 Other Feature Engineering: 
-\code{\link{Apply_Asinh}()},
 \code{\link{Apply_Asin}()},
+\code{\link{Apply_Asinh}()},
 \code{\link{Apply_BoxCox}()},
+\code{\link{Apply_Log}()},
 \code{\link{Apply_LogPlus1}()},
 \code{\link{Apply_Logit}()},
-\code{\link{Apply_Log}()},
 \code{\link{Apply_Sqrt}()},
 \code{\link{Apply_YeoJohnson}()},
 \code{\link{AutoDataPartition}()},
 \code{\link{AutoDiffLagN}()},
 \code{\link{AutoInteraction}()},
 \code{\link{AutoLagRollMode}()},
-\code{\link{AutoLagRollStatsScoring}()},
 \code{\link{AutoLagRollStats}()},
+\code{\link{AutoLagRollStatsScoring}()},
 \code{\link{AutoTransformationCreate}()},
 \code{\link{AutoTransformationScore}()},
 \code{\link{AutoWord2VecModeler}()},
@@ -144,35 +144,35 @@ Other Feature Engineering:
 \code{\link{DT_GDL_Feature_Engineering}()},
 \code{\link{Estimate_BoxCox_Lambda}()},
 \code{\link{Estimate_YeoJohnson_Lambda}()},
-\code{\link{H2OAutoencoderScoring}()},
 \code{\link{H2OAutoencoder}()},
+\code{\link{H2OAutoencoderScoring}()},
 \code{\link{Interact}()},
-\code{\link{InvApply_Asinh}()},
 \code{\link{InvApply_Asin}()},
+\code{\link{InvApply_Asinh}()},
 \code{\link{InvApply_BoxCox}()},
+\code{\link{InvApply_Log}()},
 \code{\link{InvApply_LogPlus1}()},
 \code{\link{InvApply_Logit}()},
-\code{\link{InvApply_Log}()},
 \code{\link{InvApply_Sqrt}()},
 \code{\link{InvApply_YeoJohnson}()},
 \code{\link{ModelDataPrep}()},
-\code{\link{Partial_DT_GDL_Feature_Engineering2}()},
 \code{\link{Partial_DT_GDL_Feature_Engineering}()},
-\code{\link{PercRankScoring}()},
+\code{\link{Partial_DT_GDL_Feature_Engineering2}()},
 \code{\link{PercRank}()},
-\code{\link{StandardizeScoring}()},
+\code{\link{PercRankScoring}()},
 \code{\link{Standardize}()},
-\code{\link{Test_Asinh}()},
+\code{\link{StandardizeScoring}()},
 \code{\link{Test_Asin}()},
+\code{\link{Test_Asinh}()},
 \code{\link{Test_BoxCox}()},
 \code{\link{Test_Identity}()},
+\code{\link{Test_Log}()},
 \code{\link{Test_LogPlus1}()},
 \code{\link{Test_Logit}()},
-\code{\link{Test_Log}()},
 \code{\link{Test_Sqrt}()},
 \code{\link{Test_YeoJohnson}()},
-\code{\link{TimeSeriesFillRoll}()},
-\code{\link{TimeSeriesFill}()}
+\code{\link{TimeSeriesFill}()},
+\code{\link{TimeSeriesFillRoll}()}
 }
 \author{
 Adrian Antico

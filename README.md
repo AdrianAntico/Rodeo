@@ -26,6 +26,159 @@ devtools::install_github("AdrianAntico/AutoNLP", upgrade = FALSE)
 devtools::install_github("AdrianAntico/Rodeo", upgrade = FALSE)
 ```
 
+## Rodeo vNext Feature Engineering and Model Prep Examples
+
+The vNext APIs are additive. They do not replace legacy Rodeo functions such as
+`AutoDataPartition()`, `PartitionData()`, `ModelDataPrep()`, `DummifyDT()`,
+`Standardize()`, or the cross-row feature functions. The vNext layer provides a
+clean plan, fit, transform, artifact, and QA contract for scoring-safe workflows.
+
+### Feature Engineering vNext
+
+```r
+library(data.table)
+library(Rodeo)
+
+train <- data.table(
+  id = 1:8,
+  revenue = c(10, 20, 30, NA, 50, 100, 70, 80),
+  spend = c(5, 8, 12, 20, 25, 30, 35, 40),
+  channel = c("Email", "Email", "Search", "Social", "Search", "Direct", "Affiliate", NA),
+  region = c("West", "East", "West", "South", "East", "West", "North", "South"),
+  event_date = as.Date("2024-01-01") + 0:7,
+  note = c("new customer", "repeat", "", NA, "promo click", "direct", "affiliate", "last row")
+)
+
+plan <- rodeo_feature_plan(
+  numeric = list(
+    columns = c("revenue", "spend"),
+    transforms = c("log1p", "sqrt", "standardize", "winsorize"),
+    winsorize_probs = c(0.05, 0.95)
+  ),
+  categorical = list(
+    columns = c("channel", "region"),
+    top_n = 3L,
+    rare_level = "__RARE__",
+    unseen_level = "__UNSEEN__",
+    one_hot = TRUE,
+    keep_original = TRUE
+  ),
+  calendar = list(
+    columns = "event_date",
+    features = c("year", "month", "wday", "quarter", "is_weekend")
+  ),
+  text = list(
+    columns = "note",
+    features = c("char_count", "word_count", "digit_count", "blank")
+  ),
+  missingness = list(
+    columns = c("revenue", "channel", "note"),
+    suffix = "_is_missing"
+  ),
+  interactions = list(
+    numeric_pairs = list(c("revenue", "spend")),
+    categorical_numeric = list(list(categorical = "channel", numeric = "spend")),
+    categorical_pairs = list(c("channel", "region")),
+    max_features = 20L
+  )
+)
+
+fit <- rodeo_fit_feature_plan(train, plan)
+engineered_train <- rodeo_transform_feature_plan(train, fit)
+
+score <- data.table::copy(train)
+score[1L, channel := "Podcast"]
+engineered_score <- rodeo_transform_feature_plan(score, fit)
+
+artifact_result <- generate_rodeo_feature_engineering_artifacts(train, plan)
+artifact_result$artifacts$feature_manifest
+artifact_result$artifacts$diagnostics
+
+qa_rodeo_vnext()
+qa_generate_rodeo_feature_engineering_artifacts()
+```
+
+### Model Prep vNext
+
+```r
+library(data.table)
+library(Rodeo)
+
+data <- data.table(
+  id = 1:1000,
+  target = sample(c("no", "yes"), 1000, TRUE),
+  customer_id = sample(sprintf("c%03d", 1:200), 1000, TRUE),
+  event_date = as.Date("2024-01-01") + sample(0:365, 1000, TRUE),
+  x1 = rnorm(1000),
+  x2 = runif(1000)
+)
+
+# Random train/test split
+random_plan <- rodeo_partition_plan(
+  method = "random",
+  fractions = c(train = 0.8, test = 0.2),
+  seed = 123L,
+  k = 5L
+)
+
+random_fit <- rodeo_fit_partition_plan(data, random_plan)
+random_prepared <- rodeo_apply_partition_plan(data, random_fit)
+random_fit$partition_manifest
+random_fit$fold_manifest
+
+# Stratified train/validation/test split
+stratified_plan <- rodeo_partition_plan(
+  method = "stratified",
+  fractions = c(train = 0.7, validation = 0.1, test = 0.2),
+  target_col = "target",
+  seed = 123L,
+  k = 5L
+)
+
+stratified_fit <- rodeo_fit_partition_plan(data, stratified_plan)
+stratified_prepared <- rodeo_apply_partition_plan(data, stratified_fit)
+
+# Grouped split keeps all rows for a customer in the same partition
+grouped_plan <- rodeo_partition_plan(
+  method = "grouped",
+  fractions = c(train = 0.75, test = 0.25),
+  group_col = "customer_id",
+  seed = 123L,
+  k = 5L
+)
+
+grouped_fit <- rodeo_fit_partition_plan(data, grouped_plan)
+grouped_prepared <- rodeo_apply_partition_plan(data, grouped_fit)
+
+# Time split assigns earlier records to earlier partitions
+time_plan <- rodeo_partition_plan(
+  method = "time",
+  fractions = c(train = 0.7, validation = 0.1, test = 0.2),
+  date_col = "event_date",
+  seed = 123L,
+  k = 5L
+)
+
+time_fit <- rodeo_fit_partition_plan(data, time_plan)
+time_prepared <- rodeo_apply_partition_plan(data, time_fit)
+
+# Fold assignment can be used directly
+folds <- rodeo_create_folds(
+  data = data,
+  k = 5L,
+  target_col = "target",
+  seed = 123L
+)
+
+model_prep_result <- generate_rodeo_model_prep_artifacts(data, stratified_plan)
+model_prep_result$artifacts$partition_manifest
+model_prep_result$artifacts$fold_manifest
+model_prep_result$metadata
+
+qa_rodeo_vnext_model_prep()
+qa_generate_rodeo_model_prep_artifacts()
+```
+
 ## Automated feature engineering using data.table and collapse
 
 ### Character Type Data

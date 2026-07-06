@@ -35,7 +35,7 @@ CreateCalendarVariables Rapidly creates calendar variables based on the date col
 \examples{
 \dontrun{
 # Create fake data with a Date column----
-data <- AutoQuant::FakeDataGenerator(
+data <- Rodeo::FakeDataGenerator(
   Correlation = 0.75,
   N = 25000L,
   ID = 2L,
@@ -47,7 +47,7 @@ data <- AutoQuant::FakeDataGenerator(
 for(i in seq_len(20L)) {
   print(i)
   data <- data.table::rbindlist(
-    list(data, AutoQuant::FakeDataGenerator(
+    list(data, Rodeo::FakeDataGenerator(
     Correlation = 0.75,
     N = 25000L,
     ID = 2L,
@@ -62,7 +62,7 @@ for(i in seq_len(20L)) {
 #   the second, minute, and hour selections since
 #   it is not timestamp data
 runtime <- system.time(
-  data <- AutoQuant::CreateCalendarVariables(
+  data <- Rodeo::CreateCalendarVariables(
     data = data,
     DateCols = "DateTime",
     AsFactor = FALSE,
@@ -84,20 +84,20 @@ print(runtime)
 }
 \seealso{
 Other Feature Engineering: 
-\code{\link{Apply_Asinh}()},
 \code{\link{Apply_Asin}()},
+\code{\link{Apply_Asinh}()},
 \code{\link{Apply_BoxCox}()},
+\code{\link{Apply_Log}()},
 \code{\link{Apply_LogPlus1}()},
 \code{\link{Apply_Logit}()},
-\code{\link{Apply_Log}()},
 \code{\link{Apply_Sqrt}()},
 \code{\link{Apply_YeoJohnson}()},
 \code{\link{AutoDataPartition}()},
 \code{\link{AutoDiffLagN}()},
 \code{\link{AutoInteraction}()},
 \code{\link{AutoLagRollMode}()},
-\code{\link{AutoLagRollStatsScoring}()},
 \code{\link{AutoLagRollStats}()},
+\code{\link{AutoLagRollStatsScoring}()},
 \code{\link{AutoTransformationCreate}()},
 \code{\link{AutoTransformationScore}()},
 \code{\link{AutoWord2VecModeler}()},
@@ -108,35 +108,35 @@ Other Feature Engineering:
 \code{\link{DummifyDT}()},
 \code{\link{Estimate_BoxCox_Lambda}()},
 \code{\link{Estimate_YeoJohnson_Lambda}()},
-\code{\link{H2OAutoencoderScoring}()},
 \code{\link{H2OAutoencoder}()},
+\code{\link{H2OAutoencoderScoring}()},
 \code{\link{Interact}()},
-\code{\link{InvApply_Asinh}()},
 \code{\link{InvApply_Asin}()},
+\code{\link{InvApply_Asinh}()},
 \code{\link{InvApply_BoxCox}()},
+\code{\link{InvApply_Log}()},
 \code{\link{InvApply_LogPlus1}()},
 \code{\link{InvApply_Logit}()},
-\code{\link{InvApply_Log}()},
 \code{\link{InvApply_Sqrt}()},
 \code{\link{InvApply_YeoJohnson}()},
 \code{\link{ModelDataPrep}()},
-\code{\link{Partial_DT_GDL_Feature_Engineering2}()},
 \code{\link{Partial_DT_GDL_Feature_Engineering}()},
-\code{\link{PercRankScoring}()},
+\code{\link{Partial_DT_GDL_Feature_Engineering2}()},
 \code{\link{PercRank}()},
-\code{\link{StandardizeScoring}()},
+\code{\link{PercRankScoring}()},
 \code{\link{Standardize}()},
-\code{\link{Test_Asinh}()},
+\code{\link{StandardizeScoring}()},
 \code{\link{Test_Asin}()},
+\code{\link{Test_Asinh}()},
 \code{\link{Test_BoxCox}()},
 \code{\link{Test_Identity}()},
+\code{\link{Test_Log}()},
 \code{\link{Test_LogPlus1}()},
 \code{\link{Test_Logit}()},
-\code{\link{Test_Log}()},
 \code{\link{Test_Sqrt}()},
 \code{\link{Test_YeoJohnson}()},
-\code{\link{TimeSeriesFillRoll}()},
-\code{\link{TimeSeriesFill}()}
+\code{\link{TimeSeriesFill}()},
+\code{\link{TimeSeriesFillRoll}()}
 }
 \author{
 Adrian Antico

@@ -35,9 +35,9 @@ This function will take your ratings matrix and model and score your data in par
 \examples{
 \donttest{
 # Create fake data
-data <- AutoQuant::FakeDataGenerator(
+data <- Rodeo::FakeDataGenerator(
   Correlation = 0.85,
-  N = 1000,
+  N = 1000000,
   ID = 2,
   ZIP = 0,
   AddDate = FALSE,
@@ -45,7 +45,7 @@ data <- AutoQuant::FakeDataGenerator(
   MultiClass = FALSE)
 
 # Run data partitioning function
-dataSets <- AutoQuant::AutoDataPartition(
+dataSets <- Rodeo::AutoDataPartition(
   data,
   NumDataSets = 3L,
   Ratios = c(0.70,0.20,0.10),
@@ -61,19 +61,19 @@ TestData <- dataSets$TestData
 }
 \seealso{
 Other Feature Engineering: 
-\code{\link{Apply_Asinh}()},
 \code{\link{Apply_Asin}()},
+\code{\link{Apply_Asinh}()},
 \code{\link{Apply_BoxCox}()},
+\code{\link{Apply_Log}()},
 \code{\link{Apply_LogPlus1}()},
 \code{\link{Apply_Logit}()},
-\code{\link{Apply_Log}()},
 \code{\link{Apply_Sqrt}()},
 \code{\link{Apply_YeoJohnson}()},
 \code{\link{AutoDiffLagN}()},
 \code{\link{AutoInteraction}()},
 \code{\link{AutoLagRollMode}()},
-\code{\link{AutoLagRollStatsScoring}()},
 \code{\link{AutoLagRollStats}()},
+\code{\link{AutoLagRollStatsScoring}()},
 \code{\link{AutoTransformationCreate}()},
 \code{\link{AutoTransformationScore}()},
 \code{\link{AutoWord2VecModeler}()},
@@ -85,35 +85,35 @@ Other Feature Engineering:
 \code{\link{DummifyDT}()},
 \code{\link{Estimate_BoxCox_Lambda}()},
 \code{\link{Estimate_YeoJohnson_Lambda}()},
-\code{\link{H2OAutoencoderScoring}()},
 \code{\link{H2OAutoencoder}()},
+\code{\link{H2OAutoencoderScoring}()},
 \code{\link{Interact}()},
-\code{\link{InvApply_Asinh}()},
 \code{\link{InvApply_Asin}()},
+\code{\link{InvApply_Asinh}()},
 \code{\link{InvApply_BoxCox}()},
+\code{\link{InvApply_Log}()},
 \code{\link{InvApply_LogPlus1}()},
 \code{\link{InvApply_Logit}()},
-\code{\link{InvApply_Log}()},
 \code{\link{InvApply_Sqrt}()},
 \code{\link{InvApply_YeoJohnson}()},
 \code{\link{ModelDataPrep}()},
-\code{\link{Partial_DT_GDL_Feature_Engineering2}()},
 \code{\link{Partial_DT_GDL_Feature_Engineering}()},
-\code{\link{PercRankScoring}()},
+\code{\link{Partial_DT_GDL_Feature_Engineering2}()},
 \code{\link{PercRank}()},
-\code{\link{StandardizeScoring}()},
+\code{\link{PercRankScoring}()},
 \code{\link{Standardize}()},
-\code{\link{Test_Asinh}()},
+\code{\link{StandardizeScoring}()},
 \code{\link{Test_Asin}()},
+\code{\link{Test_Asinh}()},
 \code{\link{Test_BoxCox}()},
 \code{\link{Test_Identity}()},
+\code{\link{Test_Log}()},
 \code{\link{Test_LogPlus1}()},
 \code{\link{Test_Logit}()},
-\code{\link{Test_Log}()},
 \code{\link{Test_Sqrt}()},
 \code{\link{Test_YeoJohnson}()},
-\code{\link{TimeSeriesFillRoll}()},
-\code{\link{TimeSeriesFill}()}
+\code{\link{TimeSeriesFill}()},
+\code{\link{TimeSeriesFillRoll}()}
 }
 \author{
 Adrian Antico

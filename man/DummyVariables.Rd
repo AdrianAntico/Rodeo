@@ -29,7 +29,7 @@ Create dummy variables for categorical variables. You can select the max amount 
 }
 \examples{
 \dontrun{
-Output <- AutoQuant::DummyVariables(
+Output <- Rodeo::DummyVariables(
   data = data,
   RunMode = "train",
   ArgsList = ArgsList_FE,

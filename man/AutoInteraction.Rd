@@ -43,7 +43,7 @@ AutoInteraction creates interaction variables from your numerical features in yo
 #########################################
 
 # Create fake data
-data <- AutoQuant::FakeDataGenerator(
+data <- Rodeo::FakeDataGenerator(
   Correlation = 0.70,
   N = 50000,
   ID = 2L,
@@ -63,7 +63,7 @@ Cols <-names(data)[c(which(unlist(lapply(data, is.numeric))),
                      which(unlist(lapply(data, is.integer))))]
 
 # Model Training Feature Engineering
-system.time(data <- AutoQuant::AutoInteraction(
+system.time(data <- Rodeo::AutoInteraction(
   data = data,
   NumericVars = Cols,
   InteractionDepth = 4,
@@ -84,7 +84,7 @@ print(ncol(data))
 ########################################
 
 # Create fake data
-data <- AutoQuant::FakeDataGenerator(
+data <- Rodeo::FakeDataGenerator(
   Correlation = 0.70,
   N = 1000,
   ID = 2L,
@@ -103,7 +103,7 @@ print(ncol(data))
 data <- data[1L]
 
 # Model Scoring Feature Engineering
-system.time(data <- AutoQuant::AutoInteraction(
+system.time(data <- Rodeo::AutoInteraction(
   data = data,
   NumericVars = names(data)[
     c(which(unlist(lapply(data, is.numeric))),
@@ -124,19 +124,19 @@ print(ncol(data))
 }
 \seealso{
 Other Feature Engineering: 
-\code{\link{Apply_Asinh}()},
 \code{\link{Apply_Asin}()},
+\code{\link{Apply_Asinh}()},
 \code{\link{Apply_BoxCox}()},
+\code{\link{Apply_Log}()},
 \code{\link{Apply_LogPlus1}()},
 \code{\link{Apply_Logit}()},
-\code{\link{Apply_Log}()},
 \code{\link{Apply_Sqrt}()},
 \code{\link{Apply_YeoJohnson}()},
 \code{\link{AutoDataPartition}()},
 \code{\link{AutoDiffLagN}()},
 \code{\link{AutoLagRollMode}()},
-\code{\link{AutoLagRollStatsScoring}()},
 \code{\link{AutoLagRollStats}()},
+\code{\link{AutoLagRollStatsScoring}()},
 \code{\link{AutoTransformationCreate}()},
 \code{\link{AutoTransformationScore}()},
 \code{\link{AutoWord2VecModeler}()},
@@ -148,35 +148,35 @@ Other Feature Engineering:
 \code{\link{DummifyDT}()},
 \code{\link{Estimate_BoxCox_Lambda}()},
 \code{\link{Estimate_YeoJohnson_Lambda}()},
-\code{\link{H2OAutoencoderScoring}()},
 \code{\link{H2OAutoencoder}()},
+\code{\link{H2OAutoencoderScoring}()},
 \code{\link{Interact}()},
-\code{\link{InvApply_Asinh}()},
 \code{\link{InvApply_Asin}()},
+\code{\link{InvApply_Asinh}()},
 \code{\link{InvApply_BoxCox}()},
+\code{\link{InvApply_Log}()},
 \code{\link{InvApply_LogPlus1}()},
 \code{\link{InvApply_Logit}()},
-\code{\link{InvApply_Log}()},
 \code{\link{InvApply_Sqrt}()},
 \code{\link{InvApply_YeoJohnson}()},
 \code{\link{ModelDataPrep}()},
-\code{\link{Partial_DT_GDL_Feature_Engineering2}()},
 \code{\link{Partial_DT_GDL_Feature_Engineering}()},
-\code{\link{PercRankScoring}()},
+\code{\link{Partial_DT_GDL_Feature_Engineering2}()},
 \code{\link{PercRank}()},
-\code{\link{StandardizeScoring}()},
+\code{\link{PercRankScoring}()},
 \code{\link{Standardize}()},
-\code{\link{Test_Asinh}()},
+\code{\link{StandardizeScoring}()},
 \code{\link{Test_Asin}()},
+\code{\link{Test_Asinh}()},
 \code{\link{Test_BoxCox}()},
 \code{\link{Test_Identity}()},
+\code{\link{Test_Log}()},
 \code{\link{Test_LogPlus1}()},
 \code{\link{Test_Logit}()},
-\code{\link{Test_Log}()},
 \code{\link{Test_Sqrt}()},
 \code{\link{Test_YeoJohnson}()},
-\code{\link{TimeSeriesFillRoll}()},
-\code{\link{TimeSeriesFill}()}
+\code{\link{TimeSeriesFill}()},
+\code{\link{TimeSeriesFillRoll}()}
 }
 \author{
 Adrian Antico

@@ -19,7 +19,7 @@ Create data sets for machine learning
 }
 \examples{
 \dontrun{
-Output <- AutoQuant:::PartitionData(
+Output <- Rodeo:::PartitionData(
   data = data,
   ArgsList = ArgsList)
 TrainData <- Output$TrainData

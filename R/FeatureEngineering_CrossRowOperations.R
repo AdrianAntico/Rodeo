@@ -2182,7 +2182,7 @@ Partial_DT_GDL_Feature_Engineering <- function(data,
             for(t in TargetS) {
               TargetN <- TargetN + 1L
               for(j in tempperiods) {
-                data1[, paste0("Q_",z,"_",j,"_",t) := fBasics::rowKurtosis(.SD), .SDcols = LagColss[[TargetN]][seq_len(j)]]
+                data1[, paste0("Q_",z,"_",j,"_",t) := fBasics::rowQuantiles(.SD), .SDcols = LagColss[[TargetN]][seq_len(j)]]
                 PeriodKeep <- c(PeriodKeep, paste0("Q_", z, "_", j, "_", t))
               }
             }

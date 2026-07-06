@@ -28,7 +28,7 @@ Create calendar variables
 }
 \examples{
 \dontrun{
-Output <- AutoQuant:::CalendarVariables(
+Output <- Rodeo:::CalendarVariables(
   data = data,
   RunMode = "train",
   ArgsList = ArgsList_FE,

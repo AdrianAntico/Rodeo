@@ -537,14 +537,12 @@ rodeo_vnext_qa_result <- function(test, passed, detail = "") {
   data.table::data.table(test = test, passed = isTRUE(passed), detail = as.character(detail))
 }
 
-#' @export
 qa_rodeo_vnext_numeric <- function() {
   out <- rodeo_fit_transform_feature_plan(rodeo_vnext_fixture(), rodeo_vnext_test_plan())
   cols <- c("x_log1p", "x_sqrt", "x_standardize", "x_winsorize")
   rodeo_vnext_qa_result("numeric", all(cols %in% names(out$engineered_data)), paste(cols, collapse = ", "))
 }
 
-#' @export
 qa_rodeo_vnext_categorical <- function() {
   out <- rodeo_fit_transform_feature_plan(rodeo_vnext_fixture(), rodeo_vnext_test_plan())
   score <- data.table::copy(rodeo_vnext_fixture())
@@ -554,25 +552,21 @@ qa_rodeo_vnext_categorical <- function() {
   rodeo_vnext_qa_result("categorical", unseen_col %in% names(scored) && scored[[unseen_col]][1L] == 1L, "unseen category handled")
 }
 
-#' @export
 qa_rodeo_vnext_calendar <- function() {
   out <- rodeo_fit_transform_feature_plan(rodeo_vnext_fixture(), rodeo_vnext_test_plan())
   rodeo_vnext_qa_result("calendar", all(c("date_year", "date_month", "date_is_weekend") %in% names(out$engineered_data)), "calendar columns exist")
 }
 
-#' @export
 qa_rodeo_vnext_text <- function() {
   out <- rodeo_fit_transform_feature_plan(rodeo_vnext_fixture(), rodeo_vnext_test_plan())
   rodeo_vnext_qa_result("text", all(c("text_char_count", "text_word_count", "text_blank") %in% names(out$engineered_data)), "text columns exist")
 }
 
-#' @export
 qa_rodeo_vnext_interactions <- function() {
   out <- rodeo_fit_transform_feature_plan(rodeo_vnext_fixture(), rodeo_vnext_test_plan())
   rodeo_vnext_qa_result("interactions", all(c("x_x_y", "cat_x_cat2") %in% names(out$engineered_data)), "interaction columns exist")
 }
 
-#' @export
 qa_rodeo_vnext_fit_transform <- function() {
   data <- rodeo_vnext_fixture()
   plan <- rodeo_vnext_test_plan()
@@ -581,13 +575,11 @@ qa_rodeo_vnext_fit_transform <- function() {
   rodeo_vnext_qa_result("fit_transform", inherits(fitted, "rodeo_fitted_feature_plan") && nrow(transformed) == nrow(data), "fit/transform reusable")
 }
 
-#' @export
 qa_generate_rodeo_feature_engineering_artifacts <- function() {
   out <- generate_rodeo_feature_engineering_artifacts(rodeo_vnext_fixture(), rodeo_vnext_test_plan())
   rodeo_vnext_qa_result("artifact_generator", all(c("artifacts", "metadata", "warnings", "diagnostics", "value") %in% names(out)), "structured output")
 }
 
-#' @export
 qa_rodeo_vnext <- function() {
   data.table::rbindlist(list(
     qa_rodeo_vnext_numeric(),

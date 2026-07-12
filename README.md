@@ -98,6 +98,35 @@ qa_rodeo_vnext()
 qa_generate_rodeo_feature_engineering_artifacts()
 ```
 
+### Structured Transformation Contract
+
+Rodeo also exposes a lower-level deterministic transformation contract for
+future AnalyticsShinyApp integration. A transformation spec stores type,
+columns, parameters, learned state, schema metadata, diagnostics, and versioned
+metadata without storing executable code.
+
+```r
+spec <- rodeo_transformation_spec(
+  type = "missing_impute",
+  input_columns = c("spend", "channel"),
+  parameters = list(method = "median_mode")
+)
+
+fitted <- rodeo_fit_transformation(train, spec)
+prepared_train <- rodeo_apply_transformation(train, fitted)
+prepared_score <- rodeo_apply_transformation(score, fitted)
+
+rodeo_save_transformation(fitted, "missing_impute.rds")
+loaded <- rodeo_load_transformation("missing_impute.rds")
+metadata <- rodeo_transformation_metadata(loaded)
+
+qa_rodeo_transformation_contract()
+```
+
+The current contract seed supports missing imputation, constant-column removal,
+near-zero variance removal, factor level management, and date feature
+extraction. It is intentionally not a pipeline engine or AutoML layer.
+
 ### Model Prep vNext
 
 ```r

@@ -249,7 +249,6 @@ generate_rodeo_model_prep_artifacts <- function(data, plan = NULL, fitted_plan =
   )
 }
 
-#' @export
 qa_rodeo_vnext_model_prep <- function() {
   data <- rodeo_model_prep_fixture()
   random_plan <- rodeo_partition_plan(method = "random", fractions = c(train = 0.7, test = 0.3), seed = 1L)
@@ -278,7 +277,6 @@ qa_rodeo_vnext_model_prep <- function() {
   ), use.names = TRUE)
 }
 
-#' @export
 qa_generate_rodeo_model_prep_artifacts <- function() {
   out <- generate_rodeo_model_prep_artifacts(
     rodeo_model_prep_fixture(),

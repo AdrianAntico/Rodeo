@@ -14,6 +14,17 @@ Create a scoring-safe feature plan once, fit it on training data, and reuse the 
 - `rodeo_fit_transform_feature_plan()`
 - `generate_rodeo_feature_engineering_artifacts()`
 
+The structured transformation contract is a lower-level additive contract for individual deterministic transformations:
+
+- `rodeo_transformation_spec()`
+- `rodeo_fit_transformation()`
+- `rodeo_apply_transformation()`
+- `rodeo_save_transformation()`
+- `rodeo_load_transformation()`
+- `rodeo_transformation_metadata()`
+
+See `docs/rodeo_transformation_contract.md`.
+
 ## Supported vNext Families
 
 | Family | vNext status | Notes |

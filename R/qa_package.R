@@ -18,6 +18,7 @@ qa_rodeo_package <- function() {
   rows <- data.table::rbindlist(list(
     qa_rodeo_vnext(),
     qa_rodeo_transformation_contract(),
+    qa_rodeo_temporal_transformation(),
     qa_rodeo_vnext_model_prep(),
     qa_generate_rodeo_model_prep_artifacts()
   ), use.names = TRUE, fill = TRUE)

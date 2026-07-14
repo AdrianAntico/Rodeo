@@ -37,6 +37,7 @@ A list containing training features, future features, feature manifest,
 diagnostics, and metadata.
 }
 \description{
-Creates leakage-safe cross-target lag, rolling, calendar, and known-future
-features for wide multi-target forecasting data.
+Creates leakage-safe cross-target lag and rolling features for wide
+multi-target forecasting data. Features are shifted by at least one period so
+same-period and future target values are never used.
 }

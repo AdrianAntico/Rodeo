@@ -10,8 +10,15 @@ rodeo_temporal_transformation_spec(
   frequency = "auto",
   calendar_features = c("year", "month", "day", "dow", "day_index"),
   lag_periods = 1L,
+  seasonal_lag_periods = integer(),
   rolling_windows = integer(),
   rolling_stats = "mean",
+  rolling_quantiles = c(0.25, 0.5, 0.75),
+  difference_orders = integer(),
+  seasonal_difference_periods = integer(),
+  ewm_alphas = numeric(),
+  fourier_periods = integer(),
+  fourier_pairs = 1L,
   expanding_stats = character(),
   known_future_variables = character(),
   static_entity_features = character(),
@@ -26,4 +33,10 @@ rodeo_temporal_transformation_spec(
 Defines deterministic temporal feature preparation for forecasting. The
 specification is serializable and engine-agnostic; model packages should
 consume prepared outputs rather than rebuilding temporal features.
+}
+\details{
+\code{frequency} accepts \code{"auto"} or a canonical grain: \code{1min},
+\code{5min}, \code{10min}, \code{15min}, \code{30min}, \code{hour}, \code{day},
+\code{week}, \code{month}, \code{quarter}, or \code{year}. Intraday grains
+preserve POSIXct timestamps.
 }

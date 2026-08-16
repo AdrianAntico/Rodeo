@@ -12,7 +12,8 @@ rodeo_prepare_cross_target_features(
   lag_periods = 1L,
   rolling_windows = integer(),
   known_future_variables = character(),
-  future_data = NULL
+  future_data = NULL,
+  frequency = "auto"
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ rodeo_prepare_cross_target_features(
 \item{known_future_variables}{Optional known future variable columns.}
 
 \item{future_data}{Optional future data containing date and known future variables.}
+
+\item{frequency}{Canonical calendar frequency or \code{"auto"}. Reuses the Rodeo
+temporal transformation frequency authority.}
 }
 \value{
 A list containing training features, future features, feature manifest,

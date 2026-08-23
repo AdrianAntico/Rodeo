@@ -30,6 +30,18 @@ devtools::install_github("AdrianAntico/Rodeo", upgrade = FALSE)
 
 ### Preferred expert API
 
+The current preferred layer is complete for modern static features, temporal
+features, and model partitioning. It is not yet a complete replacement for all
+legacy Rodeo workflows. Advanced categorical contrasts and credibility
+encoding, invertible transformation families, grouped cross-row operations,
+time completion, persisted generic recipes, and model-based features still
+require specialist exports while their fitted expert facades are built.
+
+See [the preferred API review](docs/rodeo_preferred_api_review.md) and the
+[exhaustive export audit](docs/rodeo_public_api_audit.csv). The target is nine
+memorable workflow entry points plus `predict()`, not an arbitrary four-call
+limit.
+
 Most users need three entry points plus standard `predict()` application. The
 underlying plan/spec functions remain available for composition and compatibility.
 

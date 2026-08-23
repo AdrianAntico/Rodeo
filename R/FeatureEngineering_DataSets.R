@@ -546,7 +546,7 @@ TimeSeriesFill <- function(data = NULL,
 
   # Impute
   if(SimpleImpute) {
-    FillData <- Rodeo::ModelDataPrep(
+    FillData <- ModelDataPrep(
       FillData,
       Impute = TRUE,
       CharToFactor = FALSE,
@@ -607,7 +607,7 @@ TimeSeriesFillRoll <- function(data = NULL,
                                SimpleImpute = FALSE) {
 
   # Prep
-  data <- Rodeo::ModelDataPrep(
+  data <- ModelDataPrep(
     data = data, Impute = TRUE, CharToFactor = FALSE, FactorToChar = TRUE, IntToNumeric = TRUE, LogicalToBinary = TRUE,
     DateToChar = FALSE, IDateConversion = TRUE, RemoveDates = FALSE, MissFactor = 'missing', MissNum = 0.0)
 
@@ -635,7 +635,7 @@ TimeSeriesFillRoll <- function(data = NULL,
   }
 
   # Impute
-  if(SimpleImpute) FillData <- Rodeo::ModelDataPrep(FillData, Impute = TRUE, CharToFactor = FALSE, FactorToChar = FALSE, IntToNumeric = FALSE, DateToChar = FALSE, RemoveDates = FALSE, MissFactor = "0", MissNum = 0, IgnoreCols = NULL)
+  if(SimpleImpute) FillData <- ModelDataPrep(FillData, Impute = TRUE, CharToFactor = FALSE, FactorToChar = FALSE, IntToNumeric = FALSE, DateToChar = FALSE, RemoveDates = FALSE, MissFactor = "0", MissNum = 0, IgnoreCols = NULL)
 
   # Return data
   return(FillData)

@@ -28,6 +28,71 @@ devtools::install_github("AdrianAntico/Rodeo", upgrade = FALSE)
 
 ## Rodeo vNext Feature Engineering and Model Prep Examples
 
+### Preferred expert API
+
+Most users need three entry points plus standard `predict()` application. The
+underlying plan/spec functions remain available for composition and compatibility.
+
+```r
+library(data.table)
+library(Rodeo)
+
+train <- data.table(
+  revenue = c(10, 20, 30, 45, 60, 90),
+  channel = c("Email", "Search", "Email", "Social", "Search", "Direct"),
+  converted = c(0, 1, 0, 1, 1, 1),
+  date = as.Date("2025-01-01") + 0:5
+)
+
+features <- rodeo_features(
+  train,
+  numeric_columns = "revenue",
+  categorical_columns = "channel",
+  calendar_columns = "date",
+  supervised_columns = "channel",
+  target = "converted",
+  supervised_method = "woe",
+  positive_class = "1",
+  smoothing = 10,
+  folds = 3L
+)
+
+score <- data.table(
+  revenue = 75,
+  channel = "Affiliate",
+  converted = 0,
+  date = as.Date("2025-01-07")
+)
+engineered_score <- predict(features, score)
+
+temporal <- rodeo_temporal_features(
+  train,
+  date_col = "date",
+  target_col = "revenue",
+  lag_periods = c(1L, 2L),
+  rolling_windows = 3L,
+  rolling_stats = c("mean", "sd"),
+  forecast_origin = max(train$date)
+)
+temporal_score <- predict(temporal, train)
+
+partitions <- rodeo_model_prep(
+  train,
+  method = "stratified",
+  target_col = "converted",
+  fractions = c(train = 0.67, test = 0.33),
+  seed = 42L,
+  k = 3L
+)
+prepared <- partitions$data
+```
+
+`rodeo_features()` exposes transformations, supervised target/WOE encoding,
+cross-fitting, smoothing, interactions, and categorical scoring behavior.
+`rodeo_temporal_features()` separately exposes forecast-origin, lag, rolling,
+difference, Fourier, entity, and known-future semantics. `rodeo_model_prep()`
+keeps random, stratified, grouped, and chronological splitting explicit.
+
 The vNext APIs are additive. They do not replace legacy Rodeo functions such as
 `AutoDataPartition()`, `PartitionData()`, `ModelDataPrep()`, `DummifyDT()`,
 `Standardize()`, or the cross-row feature functions. The vNext layer provides a

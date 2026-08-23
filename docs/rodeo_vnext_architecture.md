@@ -35,6 +35,7 @@ See `docs/rodeo_transformation_contract.md`.
 | Text | Implemented | Lightweight counts and ratios only. No embeddings or model-based text features. |
 | Missingness | Implemented | Binary missingness indicators. |
 | Interactions | Implemented | Numeric x numeric, categorical x numeric, categorical x categorical with caps. |
+| Supervised categorical encoding | Implemented | Cross-fitted target-mean and WOE values for training; full fitted maps and explicit unseen-level priors for scoring. |
 | Cross-row | Deferred | Existing lag/diff/rolling functions are benchmark baselines; vNext wrappers need explicit sort/group contracts. |
 | Model prep | Deferred | Needs separate design for partitioning and model-ready recipes. |
 | Model-Based Features | Deferred | H2O, Word2Vec, clustering, and anomaly features need separate modern leakage-safe design. |
@@ -48,6 +49,8 @@ A fitted plan stores:
 - Categorical levels, rare-level mapping, and unseen-level mapping.
 - Calendar/text/missingness column settings.
 - Interaction definitions and feature caps.
+- Supervised encoding maps, target semantics, smoothing, cross-fitting folds,
+  and positive-class metadata where applicable.
 - Feature manifest.
 - Diagnostics.
 - Warnings.
@@ -64,6 +67,14 @@ A fitted plan stores:
 - `value`: engineered data, fitted plan, manifest, diagnostics, and warnings.
 
 This is intentionally app-agnostic. Analytics/reporting apps can adapt these objects into their own artifact systems later.
+
+## Leakage Boundary
+
+Target-derived features use out-of-fold values for the training data returned
+by `rodeo_fit_transform_feature_plan()`. The fitted plan separately retains a
+full-training map for later `rodeo_transform_feature_plan()` calls. A row's own
+target therefore cannot determine its training encoding, while scoring remains
+deterministic and unseen levels resolve to the fitted training prior.
 
 ## Benchmark Alignment
 

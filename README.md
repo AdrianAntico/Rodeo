@@ -90,6 +90,22 @@ score <- data.table::copy(train)
 score[1L, channel := "Podcast"]
 engineered_score <- rodeo_transform_feature_plan(score, fit)
 
+# Leakage-safe supervised encoding. Training rows are cross-fitted; scoring
+# rows use the retained full-training map and prior for unseen levels.
+supervised_plan <- rodeo_feature_plan(
+  supervised_encoding = list(
+    columns = c("channel", "region"),
+    target = "revenue",
+    method = "target_mean",
+    smoothing = 20,
+    folds = 5L,
+    seed = 42L
+  )
+)
+supervised_fit <- rodeo_fit_transform_feature_plan(train, supervised_plan)
+encoded_train <- supervised_fit$engineered_data
+encoded_score <- rodeo_transform_feature_plan(score, supervised_fit$fitted_plan)
+
 artifact_result <- generate_rodeo_feature_engineering_artifacts(train, plan)
 artifact_result$artifacts$feature_manifest
 artifact_result$artifacts$diagnostics

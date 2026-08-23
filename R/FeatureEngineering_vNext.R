@@ -14,6 +14,9 @@ rodeo_feature_plan <- function(
   text = list(columns = character(), features = c("char_count", "word_count", "digit_count", "punct_count", "upper_ratio", "blank")),
   missingness = list(columns = character(), suffix = "_is_missing"),
   interactions = list(numeric_pairs = list(), categorical_numeric = list(), categorical_pairs = list(), max_features = 50L),
+  supervised_encoding = list(columns = character(), target = NULL,
+    method = "none", smoothing = 20, folds = 5L, seed = 1L,
+    positive_class = NULL, suffix = NULL),
   cross_row = list(enabled = FALSE),
   metadata = list()
 ) {
@@ -24,6 +27,7 @@ rodeo_feature_plan <- function(
     text = text,
     missingness = missingness,
     interactions = interactions,
+    supervised_encoding = supervised_encoding,
     cross_row = cross_row,
     metadata = metadata,
     created_at = Sys.time()
@@ -185,6 +189,12 @@ rodeo_fit_feature_plan <- function(data, plan = rodeo_feature_plan()) {
   if (length(interaction_specs$manifest_rows)) manifest_rows <- c(manifest_rows, interaction_specs$manifest_rows)
   warnings <- c(warnings, interaction_specs$warnings)
 
+  supervised <- rodeo_vnext_fit_supervised_encoding(dt,
+    plan$supervised_encoding %||% list(method = "none"))
+  if (length(supervised$manifest_rows)) manifest_rows <- c(manifest_rows,
+    supervised$manifest_rows)
+  warnings <- c(warnings, supervised$warnings)
+
   manifest <- rodeo_vnext_manifest_dt(manifest_rows)
   diagnostics <- data.table::rbindlist(list(
     data.table::data.table(check = "input_rows", status = "ok", detail = as.character(nrow(dt))),
@@ -201,6 +211,7 @@ rodeo_fit_feature_plan <- function(data, plan = rodeo_feature_plan()) {
     text_columns = txt_cols,
     missingness_columns = miss_cols,
     interaction_specs = interaction_specs$specs,
+    supervised_encoding_specs = supervised$specs,
     feature_manifest = manifest,
     diagnostics = diagnostics,
     warnings = unique(warnings),
@@ -443,6 +454,9 @@ rodeo_transform_feature_plan <- function(data, fitted_plan, copy_data = TRUE) {
   }
   rodeo_vnext_batch_assign(dt, new_names, new_values)
 
+  dt <- rodeo_vnext_apply_supervised_encoding(dt,
+    fitted_plan$supervised_encoding_specs)
+
   dt
 }
 
@@ -452,6 +466,8 @@ rodeo_transform_feature_plan <- function(data, fitted_plan, copy_data = TRUE) {
 rodeo_fit_transform_feature_plan <- function(data, plan = rodeo_feature_plan(), copy_data = TRUE) {
   fitted_plan <- rodeo_fit_feature_plan(data = data, plan = plan)
   engineered_data <- rodeo_transform_feature_plan(data = data, fitted_plan = fitted_plan, copy_data = copy_data)
+  engineered_data <- rodeo_vnext_apply_oof_supervised_encoding(
+    engineered_data, data, fitted_plan)
   list(engineered_data = engineered_data, fitted_plan = fitted_plan)
 }
 

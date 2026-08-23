@@ -16,6 +16,8 @@ rodeo_feature_plan(
   missingness = list(columns = character(), suffix = "_is_missing"),
   interactions = list(numeric_pairs = list(), categorical_numeric = list(),
     categorical_pairs = list(), max_features = 50L),
+  supervised_encoding = list(columns = character(), target = NULL, method = "none",
+    smoothing = 20, folds = 5L, seed = 1L, positive_class = NULL, suffix = NULL),
   cross_row = list(enabled = FALSE),
   metadata = list()
 )

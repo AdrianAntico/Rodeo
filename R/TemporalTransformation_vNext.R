@@ -976,18 +976,20 @@ rodeo_temporal_future_rows <- function(fitted_spec, future_data, horizon) {
     if (!fitted_spec$date_col %in% names(future)) {
       stop("future_data must contain the fitted date_col.", call. = FALSE)
     }
-    future[[fitted_spec$date_col]] <- rodeo_temporal_coerce_index(future[[fitted_spec$date_col]], fitted_spec$frequency)
+    data.table::set(future, j = fitted_spec$date_col,
+      value = rodeo_temporal_coerce_index(future[[fitted_spec$date_col]], fitted_spec$frequency))
     data.table::setorderv(future, c(fitted_spec$entity_id, fitted_spec$date_col))
     if (length(fitted_spec$entity_id)) {
       counts <- future[, .N, by = c(fitted_spec$entity_id)]
       if (any(counts$N < horizon)) {
         stop("future_data must contain at least horizon rows for each entity.", call. = FALSE)
       }
-      future[, .rodeo_panel_horizon := seq_len(.N), by = c(fitted_spec$entity_id)]
+      panel_horizon <- future[, seq_len(.N), by = c(fitted_spec$entity_id)]$V1
+      data.table::set(future, j = ".rodeo_panel_horizon", value = panel_horizon)
       return(future[.rodeo_panel_horizon <= horizon])
     }
     if (nrow(future) < horizon) stop("future_data must contain at least horizon rows.", call. = FALSE)
-    future[, .rodeo_panel_horizon := seq_len(.N)]
+    data.table::set(future, j = ".rodeo_panel_horizon", value = seq_len(nrow(future)))
     return(future[seq_len(horizon)])
   }
   dates <- rodeo_temporal_next_index(fitted_spec$forecast_origin, fitted_spec$frequency, horizon)
